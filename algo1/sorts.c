@@ -143,11 +143,11 @@ void shakerSort(int *pole, int velikost) {
     vypisPole(array, velikost);
 }
 
-int partition(int *array, int start_index, int end_index) {
+int quickSortPartition(int *array, int start_index, int end_index) {
     int pivot = array[end_index];
     int pivot_index = start_index - 1;
 
-    for (int i = start_index; i < end_index - 1; i++) {
+    for (int i = start_index; i < end_index; i++) {
         if (array[i] <= pivot) {
             pivot_index++;
             int tmp = array[i];
@@ -163,21 +163,21 @@ int partition(int *array, int start_index, int end_index) {
     return pivot_index;
 }
 
-void quickSort(int *array, int start_index, int end_index) {
+void quickSortInternal(int *array, int start_index, int end_index) {
     if (start_index < end_index) {
-    int pivot_index = partition(array, start_index, end_index);
-    quickSort(array, start_index, pivot_index - 1);
-    quickSort(array, pivot_index + 1, end_index - 1);
+    int pivot_index = quickSortPartition(array, start_index, end_index);
+    quickSortInternal(array, start_index, pivot_index - 1);
+    quickSortInternal(array, pivot_index + 1, end_index);
     }
 }
 
-void quickSortStart(int *pole, int velikost) {
+void quickSort(int *pole, int velikost) {
     /* Copy the original array */
     int array[velikost];
     memcpy(array, pole, velikost * sizeof(int));
 
     /* Sort */
-    quickSort(array, 0, velikost - 1);
+    quickSortInternal(array, 0, velikost - 1);
 
     /* Print the (hopefully) sorted array */
     vypisPole(array, velikost);
@@ -201,8 +201,8 @@ int main(void){
     bubbleSortImproved(pole, VEL);
     printf("Shaker sort:             ");
     shakerSort(pole, VEL);
-    printf("Quick sort:             ");
-    quickSortStart(pole, VEL);
+    printf("Quick sort:              ");
+    quickSort(pole, VEL);
 
     /* End of program */
     printf("EOP check:               ");
