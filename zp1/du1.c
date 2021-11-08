@@ -102,7 +102,7 @@ int deleteWords(char src[], char words[]) {
 
             /* Go through 'src' */
             for (int j = 0; j <= stringLength(src) - word_length; j++) {
-                /* See if word length lines up with the spaces in or end of 'src' */
+                /* See if word length lines up with the spaces or end of 'src' */
                 if (src[j + word_length] == ' ' || src[j + word_length] == 0) {
                     deletable = 1;
 
