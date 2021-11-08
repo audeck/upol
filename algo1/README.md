@@ -1,0 +1,1 @@
+KMI/ALGO1 (Algoritmy #1) workspace. More @ [lecture page](http://belohlavek.inf.upol.cz/vyuka/alm1-2021-22.html) or [practice](https://apollo.inf.upol.cz/~urbanec/teaching/2021/algo1/algorithm-design-1.html)
