@@ -51,114 +51,110 @@
 
 #include <stdio.h>
 
-/* Return the length of a string */
-int stringLength(char *string) {
+/* Returns the length of a string(!) */
+int stringLength(char string[]) {
     int i;
     for (i = 0; string[i]; i++);
     return i;
 }
 
-/* Deletes the character from a string at a given index (shifts all character after it to the left) */
-void deleteChar(char *string, int index) {
+/* Deletes the character from a string(!) at a given index (shifts all characters after it by one) */
+void deleteChar(char string[], int index) {
     for (int i = index + 1; i <= stringLength(string); i++) {
         string[i - 1] = string[i];
    }
 }
 
-
-/* Deletes a word (all non-space chars at and before index) 
-void deleteWord(char *string, int index) {
-    /* Special case for end word (delete word and space before word) 
-    if (string[index + 1] == 0) {
-        int i;
-        for (i = index; string[i] != 32 && i >= 0; i--) deleteChar(string, i);
-        deleteChar(string, i);
-
-    /* Otherwise delete word and space after the word 
-    } else {
-        deleteChar(string, index + 1);
-        for (int i = index; string[i] != 32 && i >= 0; i--) deleteChar(string, i);
+/* Removes leading spaces, doubled spaces, and trailing spaces */
+void formatString(char string[]) {
+    /* Remove leading spaces */
+    while (string[0] == ' ') {
+        deleteChar(string, 0);
     }
-}
-*/
 
-void deleteWord(char *string, char* word) {
-    int word_length = stringLength(word);
-    int deletable;
-
-    for (int i = 0; i <= stringLength(string) - word_length; i++) {
-        if (string[i + word_length] == 0 || string[i + word_length] == 32) {
-            deletable = 1;
-
-            for (int j = 0; j < word_length; j++) {
-                printf("%c ==", string[i + j]);
-                printf(" %c\n", word[j]);
-                if (string[i + j] != word[j]) {
-                    deletable = 0;
-                    break;
-                }
-            }
-
-            if (deletable) {
-                for (int j = 0; j < word_length; j++) {
-                    deleteChar(string, i);
-                }
-
-                // TODO: Delete space.
-                if (string[i] == 32) {
-                    deleteChar(string, i);
-                }
-            }
-        }
-    }
-}
-
-/* Deletes all words occurences from src TODO */
-int deleteWords(char *src, char* words) {
-    int deleted = 0;
-    int deletable = 1;
-    int src_offset = 0;
-    int words_offset = 0;
-
-    for (int i = 0; src[i]; i++) {
-        for (int j = 0; words[j]; j++) {
-           if (words[j] == 32) {
-                if (src[i + (j - words_offset)]) {
-
-                }
-                words_offset = j;
-                deletable = 1;
-            } else {
-                //if (words[j] == src[i + (j - words_offset)])
-            }
+    /* Remove doubled (and trailing) spaces */
+    for (int i = 0; i < stringLength(string) - 1; i++) {
+        while (string[i] == ' ' && string[i + 1] == ' ') {
+            deleteChar(string, i);
         }
     }
 
-    return deleted;
+    /* Remove the last possible trailing space */
+    if (string[stringLength(string) - 1] == ' ') {
+        deleteChar(string, stringLength(string) - 1);
+    }
 }
+
+/* Deletes all 'words' word (whole string) occurences from 'src' (spaces function as delimiters between words) */
+int deleteWords(char src[], char words[]) {
+    /* Format 'src' and 'words' just in case it was passed in broken */
+    formatString(src);
+    formatString(words);
+    int word_length;         // Length of current word
+    int word_offset = 0;     // Index of the first character of the current word
+    int deletable;           // Char deletion prerequisite
+    int deletion_count = 0;  // Amount of words deleted (RETURN VALUE)
+
+    /* Go through 'words' and find current word's length */
+    for (int i = 0; i < stringLength(words); i++) {
+        if (words[i + 1] == ' ' || words[i + 1] == 0) {
+            word_length = i + 1 - word_offset;
+
+            /* Go through 'src' */
+            for (int j = 0; j <= stringLength(src) - word_length; j++) {
+                /* See if word length lines up with the spaces in or end of 'src' */
+                if (src[j + word_length] == ' ' || src[j + word_length] == 0) {
+                    deletable = 1;
+
+                    /* Compare chars of 'src' and the current word */
+                    for (int k = 0; k < word_length; k++) {
+                        if (src[k + j] != words[k + word_offset]) {
+                            deletable = 0;
+                            break;
+                        }
+                    }
+
+                    /* Delete a 'word_length' amount of chars from 'words' (delete the current word) */
+                    if (deletable) {
+                        for (int k = 0; k < word_length; k++) {
+                            deleteChar(src, j);
+                        }
+
+                        deleteChar(src, j - (src[j + word_length] == 0));
+                        deletion_count++;
+                    }
+                }
+            }
+
+            /* Update offset so it "points" to the first char of the next word (won't overreach) */
+            word_offset = i + 2;
+        }
+    }
+    
+    return deletion_count;
+}
+
+/* Pipes snake case into lower camel case, as functions should be :^) */
+int delete_words(char src[], char words[]) {
+    return deleteWords(src, words);
+}
+
 
 int main() {
-
     char s[] = "aa bb cc nejaka slova uprostred dd";
-    char w[] = "bb cc dd ahoj priklad slov";
+    char w[] = "bb cc slov dd";
 
-    printf("%i\n", 32 == s[2] ? 1 : 0);
+    int pocet = delete_words(s, w);
+    printf("Smazano: %i\nNovy retez: %s", pocet, s);
 
-    deleteWord(s, "nejaka");
-    deleteWord(s, "dd");
-    printf("%s END\n", s);
+    /*
 
-    //int pocet = deleteWords(s, w);
+        Predchozi printf vytiskne: 
 
-    //printf("smazano: %i\nnovy retez: %s", pocet, s);
+        Smazano: 3
+        Novy retez: aa nejaka slova uprostred
 
-  /* 
-     predchozi printf vytiskne: 
-
-     smazano: 3
-     novy retez: aa nejaka slova uprostred  
-   */
-    
+    */
   
     return 0;
 }
