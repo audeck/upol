@@ -87,7 +87,7 @@ void formatString(char string[]) {
 
 /* Deletes all 'words' word (whole string) occurences from 'src' (spaces function as delimiters between words) */
 int deleteWords(char src[], char words[]) {
-    /* Format 'src' and 'words' just in case it was passed in broken */
+    /* Format 'src' and 'words' just in case they were passed in broken */
     formatString(src);
     formatString(words);
     int word_length;         // Length of current word
