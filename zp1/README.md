@@ -1,1 +1,1 @@
-KMI/ZP1 (Základy programování) workspace.
+KMI/ZP1 (Základy programování #1) workspace.
