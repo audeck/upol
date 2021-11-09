@@ -52,3 +52,11 @@
     (cond ((null nodes) nil)
           ((eql val (tree-find val (car nodes))) val) 
           (t (tree-find-children val (cdr nodes)))))
+
+(defun tree-sum (node)
+    (cond ((null node) 0)
+          (t (+ (node-value node) (tree-sum-multi (node-children node))))))
+
+(defun tree-sum-multi (nodes)
+    (cond ((null nodes) 0)
+          (t (+ (tree-sum (car nodes)) (tree-sum-multi (cdr nodes))))))
