@@ -47,6 +47,6 @@
           (t (tree-find-multi val (node-children node)))))
 
 (defun tree-find-multi (val nodes)
-    (if (null nodes)
-         nil 
-        (append (tree-find val (car nodes)) (tree-find-multi val (cdr nodes)))))
+    (cond ((null nodes) nil)
+          ((= val (tree-find val (car nodes)) val))
+          (t (tree-find-multi val (cdr nodes)))))
