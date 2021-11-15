@@ -90,6 +90,7 @@ int deleteWords(char src[], char words[]) {
     /* Format 'src' and 'words' just in case they were passed in broken */
     formatString(src);
     formatString(words);
+    
     int word_length;         // Length of current word
     int word_offset = 0;     // Index of the first character of the current word
     int deletable;           // Char deletion prerequisite
@@ -145,7 +146,7 @@ int main() {
     char w[] = "bb cc slov dd";
 
     int pocet = delete_words(s, w);
-    printf("Smazano: %i\nNovy retez: %s", pocet, s);
+    printf("Smazano: %i\nNovy retez: %s\n", pocet, s);
 
     /*
 
