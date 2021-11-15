@@ -51,102 +51,131 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 
-int min(int first, int second) {
-    return first < second ? first : second;
-}
-
-int stringLenght(char string[]) {
+/* Returns the length of a string (= the index of it's trailing 0) */
+int stringLength(char string[]) {
     int i;
     for (i = 0; string[i]; i++);
     return i;
 }
 
+/* Memcpy workaround for strings */
+void stringCopy(char copy_from[], char copy_to[]) {
+    for (int i = 0; copy_from[i]; i++) {
+        copy_to[i] = copy_from[i];
+    }
+}
+
+/* Deletes the character from a string(!) at a given index (shifts all characters after it by one) */
+void deleteChar(char string[], int index) {
+    for (int i = index + 1; i <= stringLength(string); i++) {
+        string[i - 1] = string[i];
+   }
+}
+
+/* Normalizes whitespace, removes leading spaces, doubled spaces, and trailing spaces */
+void stringFormat(char string[]) {
+    /* Replace newline characters and tabs with spaces */
+    for (int i = 0; string[i]; i++) {
+        if (string[i] == '\n' || string[i] == 9) {
+            string[i] = ' ';
+        }
+    }
+
+    /* Remove leading spaces */
+    while (string[0] == ' ') {
+        deleteChar(string, 0);
+    }
+
+    /* Remove doubled (and trailing) spaces */
+    for (int i = 0; i < stringLength(string) - 1; i++) {
+        while (string[i] == ' ' && string[i + 1] == ' ') {
+            deleteChar(string, i);
+        }
+    }
+
+    /* Remove last possible trailing space */
+    if (string[stringLength(string) - 1] == ' ') {
+        deleteChar(string, stringLength(string) - 1);
+    }
+}
+
+/* Prints a slice of a string */
 void printStringSlice(char string[], int start, int end) {
     for (int i = start; i < end; i++) {
         printf("%c", string[i]);
     }
 }
 
-void cloneString(char copy_from[], char copy_to[]) {
-    for (int i = 0; copy_from[i]; i++) {
-        copy_to[i] = copy_from[i];
-    }
-}
-
-/* 
-    'justify_left' and 'justify_right' disregard all original whitespace before and after linebreak.
-    Also, since the functions should print as many words per line as possible, they don't respect
-    user newline characters (as they probably would if they were used in a text editor), instead
-    they treat them as normal whitespace.
-*/
-
+/* Prints out left-justified 'src' with a line length limit of 'line_len' */
 void justify_left(char src[], int line_len) {
-    int offset = 0;
-    int src_len = stringLenght(src);
-    // char src_clone[];
-    // printf("%s", src_clone);
+    int last_space = 0;  // Index of last space for line breaking
+    int line_offset = 0;  // Index of current line's first character
 
-    for (int i = 0; offset < src_len; i++) {
-        for (int j = min(line_len, (src_len - offset)); j >= 0; j--) {
-            if (src[offset + j] == ' ' || src[offset + j] == ' ' || src[offset + j] == 0) {
-                /* Print one line (src slice) */
-                printStringSlice(src, offset, offset + j);
-                printf("\n");
+    /* Copy original string as to not change it, and format the copied one */
+    char *src_copy = malloc(stringLength(src) * sizeof(char));
+    stringCopy(src, src_copy);  // No memcpy ;-;
+    stringFormat(src_copy);
+    int src_len = stringLength(src_copy);
 
-                /* Update offset (and disregard whitespace) */
-                offset += j;
-                while (src[offset] == ' ') {
-                    offset++;
-                }
-
-                break;
-            }
-        }
-    }
-}
-
-void justify_left(char src[], int line_len) {
-    int last_valid = 0;
-    int offset = 0;
-    int src_len = stringLenght(src);
-
+    /* Go through 'src_copy' */
     for (int i = 0; i <= src_len; i++) {
-        if (i - offset > line_len) {
-            printStringSlice(src, offset, last_valid);
+        /* Print out previous line if over 'line_len' */
+        if (i - line_offset > line_len) {
+            printStringSlice(src_copy, line_offset, last_space);
             printf("\n");
+            line_offset = last_space + 1;
+        }
 
-            offset = last_valid;
+        /* Remember last whitespace/end of string */
+        if (src_copy[i] == ' ' || src_copy[i] == 0) {
+            last_space = i;
         }
     }
+
+    /* Print out last line */
+    printStringSlice(src_copy, line_offset, last_space);
+    printf("\n");
+
+    /* Release allocated memory */
+    free(src_copy);
 }
 
+/* Prints out right-justified 'src' with a line length limit of 'line_len' */
 void justify_right(char src[], int line_len) {
-    int offset = 0;
-    int src_len = stringLenght(src);
+    int last_space = 0;  // Index of last space for line breaking
+    int line_offset = 0;  // Index of current line's first character
 
-    for (int i = 0; offset < src_len; i++) {
-        for (int j = min(line_len, (src_len - offset)); j >= 0; j--) {
-            if (src[offset + j] == ' ' || src[offset + j] == ' ' || src[offset + j] == 0) {
-                /* Print leading whitespace */
-                for (int k = 0; k < line_len - j; k++) {
-                    printf("%s", " ");
-                }
+    /* Copy original string as to not change it, and format the copied one */
+    char *src_copy = malloc(stringLength(src) * sizeof(char));
+    stringCopy(src, src_copy);  // No memcpy ;-;
+    stringFormat(src_copy);
+    int src_len = stringLength(src_copy);
 
-                /* Print one line (src slice) */
-                printStringSlice(src, offset, offset + j);
-                printf("\n");
+    /* Go through 'src_copy' */
+    for (int i = 0; i <= src_len; i++) {
+        /* Print out line if over 'line_len' */
+        if (i - line_offset > line_len) {
+            for (int j = 0; j < line_len - (last_space - line_offset); j++) printf(" ");  // Print leading spaces
+            printStringSlice(src_copy, line_offset, last_space);
+            printf("\n");
+            line_offset = last_space + 1;
+        }
 
-                /* Update offset (and disregard all whitespace @ linebreak) */
-                offset += j;
-                while (src[offset] == ' ') {
-                    offset++;
-                }
-
-                break;
-            }
+        /* Remember last whitespace/end of string */
+        if (src_copy[i] == ' ' || src_copy[i] == 0) {
+            last_space = i;
         }
     }
+
+    /* Print out last line */
+    for (int j = 0; j < line_len - (last_space - line_offset); j++) printf(" ");  // Print leading spaces
+    printStringSlice(src_copy, line_offset, last_space);
+    printf("\n");
+
+    /* Release allocated memory */
+    free(src_copy);
 }
 
 int main() {
@@ -157,5 +186,5 @@ int main() {
     printf("%s", "\n");
     justify_right(test1_src, test1_line_len);
 
-    return 1;
+    return 0;
 }
