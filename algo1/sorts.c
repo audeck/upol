@@ -28,7 +28,7 @@ void vypisPole(int pole[], int velikost) {
 
 void insertionSort(int *pole, int velikost) {
     /* Copy the original array */
-    int array[velikost];
+    int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
     /* Sort */
@@ -50,7 +50,7 @@ void insertionSort(int *pole, int velikost) {
 
 void selectionSort(int *pole, int velikost) {
     /* Copy the original array */
-    int array[velikost];
+    int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
     /* Sort */
@@ -74,7 +74,7 @@ void selectionSort(int *pole, int velikost) {
 
 void bubbleSort(int *pole, int velikost) {
     /* Copy the original array */
-    int array[velikost];
+    int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
     /* Sort */
@@ -94,7 +94,7 @@ void bubbleSort(int *pole, int velikost) {
 
 void bubbleSortImproved(int *pole, int velikost) {
     /* Copy the original array */
-    int array[velikost];
+    int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
     /* Sort */
@@ -117,7 +117,7 @@ void bubbleSortImproved(int *pole, int velikost) {
 /* Omnidirectional bubble sort */
 void shakerSort(int *pole, int velikost) {
     /* Copy the original array */
-    int array[velikost];
+    int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
     /* Sort */
@@ -173,7 +173,7 @@ void quickSortInternal(int *array, int start_index, int end_index) {
 
 void quickSort(int *pole, int velikost) {
     /* Copy the original array */
-    int array[velikost];
+    int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
     /* Sort */
