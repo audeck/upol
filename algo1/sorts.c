@@ -3,13 +3,14 @@
 #include <time.h>
 #include <string.h>
 #define VEL 10  /* Zde nastavte velikost pole */
+#define UPPER_BOUND 100
 
 /* Nahodne naplni pole nachystane pro "velikost" prvku hodnotami 0-99 */
 void naplnPole(int pole[], int velikost) {
     time_t t;
     srand((unsigned) time(&t));
     for (int i = 0; i < velikost; i++) {
-        pole[i] = rand() % 100;  /* % 100 zajistuje rozsah 0-99. pro rozsah 0-1000 pouzijte % 1001 */
+        pole[i] = rand() % UPPER_BOUND;  /* % 100 zajistuje rozsah 0-99. pro rozsah 0-1000 pouzijte % 1001 */
     }
 }
 
@@ -26,7 +27,7 @@ void vypisPole(int pole[], int velikost) {
     the original array nor swapping its pointer, only printing its (local) sorted version.
  */
 
-void insertionSort(int *pole, int velikost) {
+void insertionSort(int pole[], int velikost) {
     /* Copy the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
@@ -46,9 +47,10 @@ void insertionSort(int *pole, int velikost) {
 
     /* Print the (hopefully) sorted array */
     vypisPole(array, velikost);
+    free(array);
 }
 
-void selectionSort(int *pole, int velikost) {
+void selectionSort(int pole[], int velikost) {
     /* Copy the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
@@ -70,9 +72,10 @@ void selectionSort(int *pole, int velikost) {
 
     /* Print the (hopefully) sorted array */
     vypisPole(array, velikost);
+    free(array);
 }
 
-void bubbleSort(int *pole, int velikost) {
+void bubbleSort(int pole[], int velikost) {
     /* Copy the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
@@ -90,9 +93,10 @@ void bubbleSort(int *pole, int velikost) {
 
     /* Print the (hopefully) sorted array */
     vypisPole(array, velikost);
+    free(array);
 }
 
-void bubbleSortImproved(int *pole, int velikost) {
+void bubbleSortImproved(int pole[], int velikost) {
     /* Copy the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
@@ -112,10 +116,11 @@ void bubbleSortImproved(int *pole, int velikost) {
 
     /* Print the (hopefully) sorted array */
     vypisPole(array, velikost);
+    free(array);
 }
 
 /* Omnidirectional bubble sort */
-void shakerSort(int *pole, int velikost) {
+void shakerSort(int pole[], int velikost) {
     /* Copy the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
@@ -141,9 +146,10 @@ void shakerSort(int *pole, int velikost) {
 
     /* Print the (hopefully) sorted array */
     vypisPole(array, velikost);
+    free(array);
 }
 
-int quickSortPartition(int *array, int start_index, int end_index) {
+int quickSortPartition(int array[], int start_index, int end_index) {
     int pivot = array[end_index];
     int pivot_index = start_index - 1;
 
@@ -163,7 +169,7 @@ int quickSortPartition(int *array, int start_index, int end_index) {
     return pivot_index;
 }
 
-void quickSortInternal(int *array, int start_index, int end_index) {
+void quickSortInternal(int array[], int start_index, int end_index) {
     if (start_index < end_index) {
     int pivot_index = quickSortPartition(array, start_index, end_index);
     quickSortInternal(array, start_index, pivot_index - 1);
@@ -171,7 +177,7 @@ void quickSortInternal(int *array, int start_index, int end_index) {
     }
 }
 
-void quickSort(int *pole, int velikost) {
+void quickSort(int pole[], int velikost) {
     /* Copy the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
@@ -181,7 +187,65 @@ void quickSort(int *pole, int velikost) {
 
     /* Print the (hopefully) sorted array */
     vypisPole(array, velikost);
+    free(array);
 }
+
+void mergeSortMerge(int array[], int start_index, int half, int end_index) {
+    int n1 = half - start_index + 1;
+    int n2 = end_index - half;
+    int *array1 = malloc(n1 + 1);
+    int *array2 = malloc(n2 + 1);
+
+    for (int i = 0; i < n1; i++) {
+        array1[i] = array[start_index + i];
+    }
+
+    for (int i = 0; i < n2; i++) {
+        array2[i] = array[half + 1 + i];
+    }
+
+    array1[n1] = UPPER_BOUND + 1;
+    array2[n2] = UPPER_BOUND + 1;
+
+    int i = 0;
+    int j = 0;
+
+    for (int k = start_index; k <= end_index; k++) {
+        if (array1[i] < array2[j]) {
+            array[k] = array1[i];
+            i++;
+        } else {
+            array[k] = array2[j];
+            j++;
+        }
+    }
+
+    free(array1);
+    free(array2);
+}
+
+void mergeSortInternal(int array[], int start_index, int end_index) {
+    if (start_index < end_index) {
+        int half = (start_index + end_index) / 2;
+        mergeSortInternal(array, start_index, half);
+        mergeSortInternal(array, half + 1, end_index);
+        mergeSortMerge(array, start_index, half, end_index);
+    }
+}
+
+void mergeSort(int pole[], int velikost) {
+    /* Copy the original array */
+    int *array = malloc(velikost * sizeof(int));
+    memcpy(array, pole, velikost * sizeof(int));
+
+    /* Sort */
+    mergeSortInternal(array, 0, velikost - 1);
+
+    /* Print the (hopefully) sorted array */
+    vypisPole(array, velikost);
+    free(array);
+}
+
 
 int main(void){
     /* Vytvorime, naplnime a vypiseme pole */
@@ -203,6 +267,8 @@ int main(void){
     shakerSort(pole, VEL);
     printf("Quick sort:              ");
     quickSort(pole, VEL);
+    printf("Merge sort:              ");
+    mergeSort(pole, VEL);
 
     /* End of program */
     printf("EOP check:               ");
