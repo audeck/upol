@@ -2,8 +2,13 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+
 #define VEL 10  /* Zde nastavte velikost pole */
 #define UPPER_BOUND 100
+
+#define parent(i) ((i - 1) / 2)
+#define left(i) ((2 * i) + 1)
+#define right(i) ((2 * i) + 2)
 
 /* Nahodne naplni pole nachystane pro "velikost" prvku hodnotami 0-99 */
 void naplnPole(int pole[], int velikost) {
@@ -246,8 +251,58 @@ void mergeSort(int pole[], int velikost) {
     free(array);
 }
 
+void maxHeapify(int *array, int size, int index) {
+    int left = left(index);
+    int right = right(index);
+    int largest;
 
-int main(void){
+    if (left < size && array[left] > array[index]) {
+        largest = left;
+    } else {
+        largest = index;
+    }
+
+    if (right < size && array[right] > array[index]) {
+        largest = right;
+    }
+
+    if (largest != index) {
+        int tmp = array[index];
+        array[index] = array[largest];
+        array[largest] = tmp;
+        maxHeapify(array, size, largest);
+    }
+}
+
+void buildMaxHeap(int *array, int size) {
+    for (int i = (size / 2); i >= 0; i--) {
+        maxHeapify(array, size, i);
+    }
+}
+
+void heapSort(int *pole, int velikost) {
+    /* Copy the original array */
+    int *array = malloc(velikost * sizeof(int));
+    memcpy(array, pole, velikost * sizeof(int));
+
+    /* Sort */
+    buildMaxHeap(array, velikost);
+    int current_size = velikost;
+
+    for (int i = current_size - 1; i > 0; i--) {
+        int tmp = array[0];
+        array[0] = array[i];
+        array[i] = tmp;
+        current_size--;
+        maxHeapify(array, current_size, 0);
+    }
+
+    /* Print the (hopefully) sorted array */
+    vypisPole(array, velikost);
+    free(array);
+} 
+
+int main(void) {
     /* Vytvorime, naplnime a vypiseme pole */
     int pole[VEL];
     naplnPole(pole, VEL);
@@ -269,6 +324,8 @@ int main(void){
     quickSort(pole, VEL);
     printf("Merge sort:              ");
     mergeSort(pole, VEL);
+    printf("Heap sort:               ");
+    heapSort(pole, VEL);
 
     /* End of program */
     printf("EOP check:               ");
