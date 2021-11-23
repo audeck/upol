@@ -28,7 +28,7 @@ void vypisPole(int pole[], int velikost) {
  */
 
 void insertionSort(int pole[], int velikost) {
-    /* Copy the original array */
+    /* Clone the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
@@ -51,7 +51,7 @@ void insertionSort(int pole[], int velikost) {
 }
 
 void selectionSort(int pole[], int velikost) {
-    /* Copy the original array */
+    /* Clone the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
@@ -76,7 +76,7 @@ void selectionSort(int pole[], int velikost) {
 }
 
 void bubbleSort(int pole[], int velikost) {
-    /* Copy the original array */
+    /* Clone the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
@@ -97,7 +97,7 @@ void bubbleSort(int pole[], int velikost) {
 }
 
 void bubbleSortImproved(int pole[], int velikost) {
-    /* Copy the original array */
+    /* Clone the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
@@ -121,7 +121,7 @@ void bubbleSortImproved(int pole[], int velikost) {
 
 /* Omnidirectional bubble sort */
 void shakerSort(int pole[], int velikost) {
-    /* Copy the original array */
+    /* Clone the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
@@ -178,7 +178,7 @@ void quickSortInternal(int array[], int start_index, int end_index) {
 }
 
 void quickSort(int pole[], int velikost) {
-    /* Copy the original array */
+    /* Clone the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
@@ -234,7 +234,7 @@ void mergeSortInternal(int array[], int start_index, int end_index) {
 }
 
 void mergeSort(int pole[], int velikost) {
-    /* Copy the original array */
+    /* Clone the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
 
