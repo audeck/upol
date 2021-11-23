@@ -26,7 +26,7 @@
     (labels ((inc (elem rest) (+ 1 rest)))
         (foldr #'inc list 0)))
 
-(defun my-mapcar (fun list)
+(defun my-mapcar-foldr (fun list)
     (labels ((HELP (elem rest)
                  (cons (funcall fun elem) rest)))
         (foldr #'HELP list '())))
