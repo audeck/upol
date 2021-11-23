@@ -20,7 +20,11 @@
         (funcall fun (car list) (foldr fun (cdr list) init))))
 
 (defun foldl (fun list init)
-    (list)) ;???
+    (labels ((iter (list ir) 
+                (if (null list) 
+                    ir 
+                    (iter (cdr list) (funcall fun ir (car list))))))
+        (iter list init)))
 
 (defun my-length (list)
     (labels ((inc (elem rest) (+ 1 rest)))
