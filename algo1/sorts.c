@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+#include <math.h>
 
 #define VEL 10  /* Zde nastavte velikost pole */
 #define UPPER_BOUND 100
@@ -274,13 +275,13 @@ void maxHeapify(int *array, int size, int index) {
     }
 }
 
-void buildMaxHeap(int *array, int size) {
+void buildMaxHeap(int array[], int size) {
     for (int i = (size / 2); i >= 0; i--) {
         maxHeapify(array, size, i);
     }
 }
 
-void heapSort(int *pole, int velikost) {
+void heapSort(int pole[], int velikost) {
     /* Copy the original array */
     int *array = malloc(velikost * sizeof(int));
     memcpy(array, pole, velikost * sizeof(int));
@@ -300,7 +301,57 @@ void heapSort(int *pole, int velikost) {
     /* Print the (hopefully) sorted array */
     vypisPole(array, velikost);
     free(array);
-} 
+}
+
+void countingSort(int array[], int digit_index) {
+    int possible_digits = 10;
+    int *final_array = malloc(VEL * sizeof(int));
+    int *count_array = malloc(possible_digits);
+
+    for (int i = 0; i < possible_digits; i++) {
+        count_array[i] = 0;
+    }
+
+    printf("%i ", (int) pow(10, digit_index));
+    printf("%i", (array[0] / (10 ^ digit_index)) % 10);
+
+    for (int i = 0; i < VEL - 1; i++) {
+        count_array[(array[i] / (10 ^ digit_index)) % 10] += 1;
+    }
+
+    for (int i = 1; i < possible_digits; i++) {
+        count_array[i] += count_array[i - 1];
+    }
+
+    for (int i = VEL - 1; i >= 0; i--) {
+        final_array[count_array[(array[i] / (10 ^ digit_index)) % 10] - 1] = array[i];
+        count_array[(array[i] / (10 ^ digit_index)) % 10] -= 1;
+    }
+
+    int *old_pointer = array;
+    array = final_array;
+    free(old_pointer);
+    free(count_array);
+}
+
+void radixSortInternal(int array[], int digits) {
+    for (int i = 0; i < digits; i++) {
+        countingSort(array, i);
+    }
+}
+
+void radixSort(int pole[], int velikost) {
+    /* Copy the original array */
+    int *array = malloc(velikost * sizeof(int));
+    memcpy(array, pole, velikost * sizeof(int));
+
+    /* Sort */
+    radixSortInternal(array, (int) log10(UPPER_BOUND));
+
+    /* Print the (hopefully) sorted array */
+    vypisPole(array, velikost);
+    free(array);
+}
 
 int main(void) {
     /* Vytvorime, naplnime a vypiseme pole */
@@ -310,23 +361,25 @@ int main(void) {
     vypisPole(pole, VEL);
 
     /* Sorts */
-    printf("Insertion sort:          ");
+    printf("Insertion sort:           ");
     insertionSort(pole, VEL);
-    printf("Selection sort:          ");
+    printf("Selection sort:           ");
     selectionSort(pole, VEL);
-    printf("Bubble sort:             ");
+    printf("Bubble sort:              ");
     bubbleSort(pole, VEL);
-    printf("Improved bubble sort:    ");
+    printf("Improved bubble sort:     ");
     bubbleSortImproved(pole, VEL);
-    printf("Shaker sort:             ");
+    printf("Shaker sort:              ");
     shakerSort(pole, VEL);
-    printf("Quick sort:              ");
+    printf("Quick sort:               ");
     quickSort(pole, VEL);
-    printf("Merge sort:              ");
+    printf("Merge sort:               ");
     mergeSort(pole, VEL);
-    printf("Heap sort:               ");
-    heapSort(pole, VEL);
-
+    // printf("Heap sort:                ");
+    // heapSort(pole, VEL);
+    printf("Radix (w/ counting) sort: ");
+    radixSort(pole, VEL);
+    
     /* End of program */
     printf("EOP check:               ");
     vypisPole(pole, VEL);  /* Print original array to make sure it's unchanged */
