@@ -53,3 +53,8 @@
     (cond ((= n 0) ())
           ((= i 0) (cons 1 (fib-list-iter n (+ i 1) 0 1)))
           ((<  i n) (cons (+ ir1 ir2) (fib-list-iter n (+ i 1) ir2 (+ ir1 ir2))))))
+
+(defun flatten (list)
+    (cond ((null list) nil)
+          ((consp (car list)) (append (flatten (car list)) (flatten (cdr list))))
+          (t (append (list (car list)) (flatten (cdr list))))))
