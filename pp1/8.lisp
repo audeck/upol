@@ -22,8 +22,14 @@
 (defun foldl (fun list init)
     (list)) ;???
 
-(defun my-mapcar-better (fun list)
-    (list)) ;???
+(defun my-length (list)
+    (labels ((inc (elem rest) (+ 1 rest)))
+        (foldr #'inc list 0)))
+
+(defun my-mapcar (fun list)
+    (labels ((HELP (elem rest)
+                 (cons (funcall fun elem) rest)))
+        (foldr #'HELP list '())))
 
 (defun arithmetic-mean (&rest numbers)
     (/ (foldr #'+ numbers 0) (length numbers)))
