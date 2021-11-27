@@ -5,9 +5,8 @@
 #include <math.h>
 
 #define VEL 10  /* Zde nastavte velikost pole */
-#define UPPER_BOUND 100
+#define UPPER_BOUND 1001
 
-#define parent(i) ((i - 1) / 2)
 #define left(i) ((2 * i) + 1)
 #define right(i) ((2 * i) + 2)
 
@@ -29,7 +28,7 @@ void vypisPole(int pole[], int velikost) {
 }
 
 /* Swaps two integers */
-void swapI(int *ip1, int *ip2) {
+void swap(int *ip1, int *ip2) {
     int tmp = *ip1;
     *ip1 = *ip2;
     *ip2 = tmp;
@@ -270,9 +269,7 @@ void maxHeapify(int array[], int size, int index) {
     }
 
     if (largest != index) {
-        int tmp = array[index];
-        array[index] = array[largest];
-        array[largest] = tmp;
+        swap(&array[index], &array[largest]);
         maxHeapify(array, size, largest);
     }
 }
@@ -353,7 +350,8 @@ int main(void) {
     naplnPole(pole, VEL);
     printf("\nOriginal:                 ");
     vypisPole(pole, VEL);
-    printSep(65);
+
+    printSep(75);
 
     /* Sorts */
     printf("Insertion sort:           ");
@@ -374,11 +372,12 @@ int main(void) {
     heapSort(pole, VEL);
     printf("Radix (w/ counting) sort: ");
     radixSort(pole, VEL);
+
+    printSep(75);
+
+    printf("Original:                 ");
+    vypisPole(pole, VEL);
     printf("\n");
-    
-    // printSep(65);
-    // printf("Original:                 ");
-    // vypisPole(pole, VEL);
     // getchar();  /* Pockame na "enter" a skoncime */
     return 0;
 }

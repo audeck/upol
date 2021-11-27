@@ -1,0 +1,7 @@
+# Ignore extension-less files
+*
+!/**/
+!*.*
+
+.vscode
+suchomel.c
