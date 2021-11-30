@@ -75,13 +75,13 @@
 #define binDigit(number, index) ((number & (1 << index)) > 0)
 
 /* Exponentiates 'base' to the power of 'exponent' and returns the result */
-int power(int base, int exponent) {
-    int result = 1;
+long int power(int base, int exponent) {
+    long int result = 1;  // power(2, 16) technically does not fit in a 16-bit int
     for (int i = 0; i < exponent; i++) result *= base;
     return result;
 }
 
-/* Magically prints out indexes depending on the binary representation of 'number' */
+/* Magically prints out array indexes depending on the binary representation of 'number' */
 void magicalPrintMachine(int number, int bin_length) {
     int first = 1;
 
@@ -100,7 +100,7 @@ void magicalPrintMachine(int number, int bin_length) {
 }
 
 void report(int p[], int n, int lb, int rb) {
-    for (int i = power(2, n) - 1; i > 0; i--) {
+    for (unsigned int i = power(2, n) - 1; i > 0; i--) {
         int result = 0;
 
         for (int j = 0; j < n; j++) {
