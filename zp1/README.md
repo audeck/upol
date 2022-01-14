@@ -1,3 +1,3 @@
 # **KMI/ZP1 (Základy programování #1) workspace.**  
-More @ https://phoenix.inf.upol.cz/~osicka/zp1.html\
+More @ https://phoenix.inf.upol.cz/~osicka/zp1.html<br>
 Completed with 40/40 points.
