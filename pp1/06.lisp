@@ -169,7 +169,37 @@
        0
       (+ (expt (car vec) 2) (vector-length-help (cdr vec)))))
 
+(defun my-remove-duplicates (list)
+  (my-remove-duplicates-iter list ()))
+
+(defun my-remove-duplicates-iter (list ir)
+  (cond ((null list) ir)
+        ((my-contains-p (car list) ir) (my-remove-duplicates-iter (cdr list) ir))
+        (t (my-remove-duplicates-iter (cdr list) (cons (car list) ir)))))
+
+(defun my-union (list1 list2)
+  (my-remove-duplicates (my-union-help list1 list2)))
+
+(defun my-union-help (list1 list2)
+  (if (null list1)
+       list2
+      (cons (car list1) (my-union (cdr list1) list2))))
+
+(defun equal-sets-p (list1 list2)
+  (and (= (length list1) (length list2)) (my-subsetp list1 list2)))
+
+(defun setify (list)
+  (merge-sort (my-remove-duplicates list)))
+
 (defun flatten (list)
-    (cond ((null list) nil)
-          ((consp (car list)) (append (flatten (car list)) (flatten (cdr list))))
-          (t (append (list (car list)) (flatten (cdr list))))))
+  (cond ((null list) ())
+        ((consp (car list)) (append (flatten (car list)) (flatten (cdr list))))
+        (t (cons (car list) (flatten (cdr list))))))
+
+(defun deep-reverse (list)
+  (deep-reverse-iter list ()))
+
+(defun deep-reverse-iter (list ir)
+  (cond ((null list) ir)
+        ((consp (car list)) (deep-reverse-iter (cdr list) (cons (deep-reverse (car list)) ir)))
+        (t (deep-reverse-iter (cdr list) (cons (car list) ir)))))
