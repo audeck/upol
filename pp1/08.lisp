@@ -40,3 +40,10 @@
 (defun my-length (list)
     (labels ((inc (elem rest) (+ 1 rest)))
         (foldr #'inc list 0)))
+
+(defun my-mapcar (fun list &rest lists)
+  (labels ((mapcar-2 (fun list1 list2)
+             (cond ((null list1) list2)
+                   ((null list2) list1)
+                   (t (cons (funcall fun (car list1) (car list2)) (mapcar-2 fun (cdr list1) (cdr list2)))))))
+    (mapcar-2 fun list lists)))
