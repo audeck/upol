@@ -37,14 +37,6 @@
                   (and (car list) (truth-list-p (cdr list))))))
     (truth-list-p (apply #'mapcar #'eql list lists))))
 
-(defun my-mapcar (fun list &rest lists)
-  (labels ((help (fun list)
-               (if (null list)
-                   '()
-                   (cons (funcall fun (car list))
-                         (my-mapcar fun (cdr list))))))
-    (apply #'help fun list lists)))
-
 (defun my-length (list)
     (labels ((inc (elem rest) (+ 1 rest)))
         (foldr #'inc list 0)))
