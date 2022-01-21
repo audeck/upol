@@ -41,7 +41,7 @@
           ((eql (car plist) prop) (cons prop (cons val (cddr plist))))
           (t (cons (car plist) (cons (cadr plist) (plist-add (cddr plist) prop val))))))
 
-; (tree-node 5 (list (tree-node 2 (list (tree-node 1 nil) (tree-node (tree-node 3 nil) (list (tree-node 4 nil))))) (tree-node 7 (list (tree-node 6 nil) (tree-node 8 nil)))))
+; (tree-node 5 (list (tree-node 2 (list (tree-node 1 nil) (tree-node 3 (list (tree-node 4 nil))))) (tree-node 7 (list (tree-node 6 nil) (tree-node 8 nil)))))
 
 (defun tree-find (val node)
     (cond ((null node) nil)
@@ -60,3 +60,46 @@
 (defun tree-sum-multi (nodes)
     (cond ((null nodes) 0)
           (t (+ (tree-sum (car nodes)) (tree-sum-multi (cdr nodes))))))
+
+(defun add-to-list (elem list)
+  (append list (list elem)))
+
+(defun tree-maximal-paths (tree)
+  (if (null tree)
+       nil
+      (tree-maximal-paths-single tree '() '())))
+
+(defun tree-maximal-paths-single (tree current_path result)
+  (if (null (node-children tree))
+      (add-to-list (add-to-list (node-value tree) current_path) result)
+      (tree-maximal-paths-multi (node-children tree) (add-to-list (node-value tree) current_path) result)))
+
+(defun tree-maximal-paths-multi (trees current_path result)
+  (if (null trees)
+       result
+      (tree-maximal-paths-multi (cdr trees) current_path (tree-maximal-paths-single (car trees) current_path result))))
+       
+(defun tree-height (tree)
+  (if (null tree)
+       0
+      (tree-height-multi (node-children tree))))
+
+(defun tree-height-multi (trees)
+  (if (null trees)
+       0
+      (max (+ 1 (tree-height (car trees))) (tree-height-multi (cdr trees)))))
+
+(defun find-path (val tree)
+  (if (null tree)
+       nil
+      (find-path-single val tree '())))
+
+(defun find-path-single (val tree path)
+  (if (eql val (node-value tree))
+      (add-to-list (node-value tree) path)
+      (find-path-multi val (node-children tree) (add-to-list (node-value tree) path))))
+
+(defun find-path-multi (val trees path)
+  (cond ((null trees) nil)
+        ((null (find-path-single val (car trees) path)) (find-path-multi val (cdr trees) path))
+        (t (find-path-single val (car trees) path))))
