@@ -143,5 +143,5 @@ int remove(list* seznam, node* uzel) {
 }
 
 int main(void) {
-
+    /* TODO: Tests */
 }
