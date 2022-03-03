@@ -45,7 +45,7 @@ void printSep(int width) {
 /* 
     Note: in order to use multiple sorts on the original array I won't be changing
     the original array nor swapping its pointer, only printing its (locally allocated) sorted copy.
- */
+*/
 
 void insertionSort(int pole[], int velikost) {
     /* Clone the original array */
