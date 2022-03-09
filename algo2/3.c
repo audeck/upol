@@ -10,11 +10,17 @@ typedef struct list {
     node* first;
 } list;
 
+typedef struct stack {
+    node* top;
+} stack;
+
+
+
 int _length(node* e) {
     if (e->next != NULL) {
         return (1 + _length(e->next));
     } else {
-        return 0;
+        return 1;
     }
 }
 
@@ -36,7 +42,7 @@ void print_list(list seznam) {
 }
 
 void add_start(list* seznam, node* uzel) {
-    node* second = seznam->first;
+    node* second = seznam->first;  // Can be NULL
     uzel->next = second;
     seznam->first = uzel;
 }
@@ -50,7 +56,11 @@ void _add_end(node* e, node* uzel) {
 }
 
 void add_end(list* seznam, node* uzel) {
-    _add_end(seznam->first, uzel);
+    if (seznam->first == NULL) {
+        seznam->first = uzel;
+    } else {
+        _add_end(seznam->first, uzel);
+    }
 }
 
 void _add_position(node* e, node* uzel, int position) {
@@ -62,7 +72,11 @@ void _add_position(node* e, node* uzel, int position) {
 }
 
 void add_position(list* seznam, node* uzel, int position) {
-    _add_position(seznam->first, uzel, position);
+    if (seznam->first == NULL) {
+        seznam->first = uzel;
+    } else {
+        _add_position(seznam->first, uzel, position);
+    }
 }
 
 int remove_start(list* seznam) {
@@ -141,6 +155,8 @@ int remove(list* seznam, node* uzel) {
     /* If 'seznam' is of length = 0 or of length = 1 and the node != 'uzel' */
     return -1;
 }
+
+
 
 int main(void) {
     /* TODO: Tests */
