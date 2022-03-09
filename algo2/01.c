@@ -90,13 +90,9 @@ struct dir* _partition(struct dir* debtors, int l, int r, int n) {
     debtors[pivot_index] = tmp;
 
     /* Return either the recursive call of '_partition' or the n-th debtor struct address */
-    if (pivot_index > n - 1) {
-        _partition(debtors, l, pivot_index - 1, n);
-    } else if (pivot_index < n - 1) {
-        _partition(debtors, pivot_index + 1, r, n);
-    } else {
-        return &debtors[pivot_index];
-    }
+    if (pivot_index > n - 1) return _partition(debtors, l, pivot_index - 1, n);
+    if (pivot_index < n - 1) return _partition(debtors, pivot_index + 1, r, n);
+    return &debtors[pivot_index];
 }
 
 /* Returns the n-th youngest debtor */

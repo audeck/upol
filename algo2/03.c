@@ -11,8 +11,12 @@ typedef struct list {
 } list;
 
 typedef struct stack {
-    node* top;
+    node* last;
 } stack;
+
+typedef struct queue {
+    node* first;
+} queue;
 
 
 
@@ -154,6 +158,47 @@ int remove(list* seznam, node* uzel) {
 
     /* If 'seznam' is of length = 0 or of length = 1 and the node != 'uzel' */
     return -1;
+}
+
+/* STACK */
+void push(stack *zasobnik, node *data) {
+    if (zasobnik->last == NULL) {
+        zasobnik->last = data;
+    } else {
+        data->next = zasobnik->last;
+        zasobnik->last = data;
+    }
+}
+
+/* STACK */
+node* pop(stack *zasobnik) {
+    node *popped = zasobnik->last;
+
+    if (popped != NULL) {
+        zasobnik->last = popped->next;
+    }
+
+    return popped;
+}
+
+/* QUEUE */
+void enqueue(queue *fronta, node *data) {
+    if (fronta->first == NULL) {
+        fronta->first = data;
+    } else {
+        _add_end(fronta->first, data);
+    }
+}
+
+/* QUEUE */
+node* dequeue(queue *fronta) {
+    node *dequeued = fronta->first;
+
+    if (dequeued != NULL) {
+        fronta->first = dequeued->next;
+    }
+
+    return dequeued;
 }
 
 
