@@ -1,6 +1,11 @@
-.vscode
-algo1/suchomel.c
-algo1/sorts
-algo2/1
-algo2/2
-algo2/3
+# Ignore all
+*
+
+# Unignore all with extensions
+!*.*
+
+# Unignore all dirs
+!*/
+
+# Ignore all personal files
+*suchomel*.*
