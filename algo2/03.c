@@ -270,6 +270,7 @@ void enqueue(queue* fronta, node* data) {
     if (fronta->first == NULL) {
         fronta->first = data;
     } else {
+        /* O(1) if we store a "last" pointer as well the "first" one in 'fronta' */
         add_endQ(fronta, data);
     }
 }
