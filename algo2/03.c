@@ -18,150 +18,220 @@ typedef struct queue {
     node* first;
 } queue;
 
-
-
-int _length(node* e) {
-    if (e->next != NULL) {
-        return (1 + _length(e->next));
-    } else {
-        return 1;
-    }
-}
-
+/* Returns the length of a linked list */
 int length(list seznam) {
-    return _length(seznam.first);
-}
+    /* Get first node */
+    node* current_node = seznam.first;
+    int len = 0;
 
-void _print_list(node* e) {
-    if (e->next != NULL) {
-        printf("%i, ", e->data);
-        _print_list(e->next);
-    } else {
-        printf("%i\n", e->data);
+    /* "Walk" through list and increment 'len' */
+    while (current_node != NULL) {
+        current_node = current_node->next;
+        len += 1;
     }
+
+    return len;
 }
 
+/* Prints out a linked list */
 void print_list(list seznam) {
-    _print_list(seznam.first);
-}
+    /* Get first node */
+    node* current_node = seznam.first;
 
-void add_start(list* seznam, node* uzel) {
-    node* second = seznam->first;  // Can be NULL
-    uzel->next = second;
-    seznam->first = uzel;
-}
-
-void _add_end(node* e, node* uzel) {
-    if (e->next != NULL) {
-        _add_end(e->next, uzel);
-    } else {
-        e->next = uzel;
+    /* "Walk" through list and print 'data' */
+    while (current_node != NULL) {
+        current_node = current_node->next;
+        printf("%i,", current_node->data);
     }
 }
 
-void add_end(list* seznam, node* uzel) {
-    if (seznam->first == NULL) {
-        seznam->first = uzel;
-    } else {
-        _add_end(seznam->first, uzel);
-    }
+/* Adds a linked list node with 'data' to the start of 'seznam' */
+void add_start(list* seznam, int data) {
+    /* Create a new node and insert it */
+    node* new = malloc(sizeof(node));
+    new->data = data;
+    new->next = seznam->first;
+    seznam->first = new;
 }
 
-void _add_position(node* e, node* uzel, int position) {
-    if (e->next == NULL || position <= 0) {
-        e->next = uzel;
-    } else {
-        _add_position(e, uzel, position - 1);
+/* Adds a linked list node with 'data' to the end of 'seznam' */
+void add_end(list* seznam, int data) {
+    /* Get first node */
+    node* current_node = seznam->first;
+
+    /* "Walk" through list */
+    while (current_node != NULL) {
+        current_node = current_node->next;
     }
+
+    /* Create new node */
+    current_node->next = malloc(sizeof(node));
+    current_node->next->data = data;
+    current_node->next->next = NULL;
 }
 
-void add_position(list* seznam, node* uzel, int position) {
-    if (seznam->first == NULL) {
-        seznam->first = uzel;
-    } else {
-        _add_position(seznam->first, uzel, position);
+/* 'position' is the new node's index (?) */
+void add_position(list* seznam, int data, int position) {
+    /* Get first node */
+    node* current_node = seznam->first;
+    int pos = position - 1;
+
+    /* Create a new node */
+    node* new = malloc(sizeof(node));
+    new->data = data;
+    new->next = NULL;
+
+    /* If 'seznam' is empty */
+    if (current_node == NULL) {
+        seznam->first = new;
+        return;
     }
+
+    /* "Walk" through list and decrement position */
+    while (current_node != NULL && pos > 0) {
+        current_node = current_node->next;
+        pos -= 1;
+    }
+
+    /* Insert new node */
+    new->next = current_node->next;
+    current_node->next = new;
 }
 
+/* Removes the first linked list node from 'seznam' */
 int remove_start(list* seznam) {
-    if (seznam->first != NULL) {
-        node* new_first = seznam->first->next;
-        free(seznam->first);
-        seznam->first = new_first;
-        return 0;
-    } else {
-        return -1;
-    }
+    /* Get first node */
+    node* current_node = seznam->first;
+
+    /* If 'seznam' is already empty */
+    if (current_node == NULL) return -1;
+
+    /* Remove first node & free up its space */
+    seznam->first = current_node->next;
+    free(current_node);
+    return 0;
 }
 
-int _remove_end(node* e) {
-    if (e->next->next == NULL) {
-        free(e->next);
-        e->next = NULL;
-    }
-}
-
+/* Removes the last linked list node from 'seznam' */
 int remove_end(list* seznam) {
+    /* Three distinguishable cases based on length of 'seznam': */
     switch (length(*seznam)) {
+        /* Empty list case */
         case 0:
             return -1;
+
+        /* One node list case */
         case 1:
             free(seznam->first);
             seznam->first = NULL;
             return 0;
+
+        /* Two+ nodes list case */
         default:
-            _remove_end(seznam->first);
+            /* Get first node */
+            node* current_node = seznam->first;
+
+            /* "Walk" through list - ->next->next to ensure we end up on the second to last node */
+            while (current_node->next->next != NULL) {
+                current_node = current_node->next;
+            }
+
+            /* Remove last node & free up its space */
+            free(current_node->next);
+            current_node->next = NULL;
+            return 0;
     }
 }
 
-int _search(node* e, node* uzel) {
-    if (e->data == uzel->data) {
-        return 0;
-    } else if (e->next == NULL) {
-        return -1;
-    } else {
-        return (1 + _search(e->next, uzel));
-    }
-}
+/* Returns the index of the first linked list node with data of 'data' in 'seznam' */
+int search(list* seznam, int data) {
+    /* Get first node */
+    node* current_node = seznam->first;
+    int pos = 0;
 
-int search(list* seznam, node* uzel) {
-    if (seznam->first != NULL) {
-        return _search(seznam->first, uzel);
-    } else {
-        return -1;
-    }
-}
+    /* "Walk" through list */
+    while (current_node != NULL) {
+        /* Compare node's value to 'data' & return 'pos' (node's index in 'seznam') if true */
+        if (current_node->data == data) return pos;
 
-int _remove(node* e, node* uzel) {
-    if (e->next->data == uzel->data) {
-        node* new_next = e->next->next;
-        free(e->next);
-        e->next = new_next;
-        return 0;
-    } else if (e->next->next == NULL) {
-        return -1;
-    } else {
-        return _remove(e->next, uzel);
-    }
-}
-
-int remove(list* seznam, node* uzel) {
-    /* If 'seznam' is of length = 1 */
-    if (seznam->first != NULL && seznam->first->next == NULL && seznam->first->data == uzel->data) {
-        free(seznam->first);
-        seznam->first = NULL;
-        return 0;
-    /* If 'seznam' is of length > 1 */
-    } else if (seznam->first->next != NULL) {
-        return _remove(seznam->first, uzel);
+        /* Otherwise go to next node & increment 'pos' */
+        current_node = current_node->next;
+        pos += 1;
     }
 
-    /* If 'seznam' is of length = 0 or of length = 1 and the node != 'uzel' */
+    /* Return reachable only if 'data' isn't in 'seznam' (hopefully) */
     return -1;
 }
 
+/* Removes the first linked list node with data of 'data' from 'seznam' */
+int remove(list* seznam, int data) {
+    /* Get first node */
+    node* current_node = seznam->first;
+
+    /* Check if 'seznam' is empty */
+    if (current_node == NULL) return -1;
+
+    /* Check if first node matches 'data' (for if length of 'seznam' is 1) */
+    if (current_node->data == data) {
+        seznam->first = current_node->next;
+        free(current_node);
+        return 0;
+    }
+
+    /* "Walk" through list */
+    while (current_node->next != NULL) {
+        /* Remove & free node if 'data' matches node's data */
+        if (current_node->next->data == data) {
+            node* old_node = current_node->next;
+            current_node->next = current_node->next->next;
+            free(old_node);
+            return 0;
+        }
+
+        /* Otherwise go to next node */
+        current_node = current_node->next;
+    }
+
+    /* Return reachable only if 'data' isn't in 'seznam' (hopefully) */
+    return -1;
+}
+
+/* Removes all linked list nodes with data of 'data' from 'seznam' */
+int removeAll(list* seznam, int data) {
+    /* Get first node */
+    node* current_node = seznam->first;
+    int ret = -1;  // Return value
+
+    /* Check if 'seznam' is empty */
+    if (current_node == NULL) return ret;
+
+    /* Check if first node matches 'data' (for if length of 'seznam' is 1) */
+    if (current_node->data == data) {
+        seznam->first = current_node->next;
+        free(current_node);
+        ret = 0;
+    }
+
+    /* "Walk" through list */
+    while (current_node->next != NULL) {
+        /* Remove & free node if 'data' matches node's data */
+        if (current_node->next->data == data) {
+            node* old_node = current_node->next;
+            current_node->next = current_node->next->next;
+            free(old_node);
+            ret = 0;
+        }
+
+        /* Otherwise go to next node */
+        current_node = current_node->next;
+    }
+
+    /* Return -1 if no removals or 0 if any removals*/
+    return ret;
+}
+
 /* STACK */
-void push(stack *zasobnik, node *data) {
+void push(stack* zasobnik, node* data) {
     if (zasobnik->last == NULL) {
         zasobnik->last = data;
     } else {
@@ -171,7 +241,7 @@ void push(stack *zasobnik, node *data) {
 }
 
 /* STACK */
-node* pop(stack *zasobnik) {
+node* pop(stack* zasobnik) {
     node *popped = zasobnik->last;
 
     if (popped != NULL) {
@@ -182,16 +252,30 @@ node* pop(stack *zasobnik) {
 }
 
 /* QUEUE */
-void enqueue(queue *fronta, node *data) {
+void add_endQ(queue* fronta, node* data) {
+    /* Get first node */
+    node* current_node = fronta->first;
+
+    /* "Walk" through list */
+    while (current_node != NULL) {
+        current_node = current_node->next;
+    }
+
+    /* Add node */
+    current_node->next = data;
+}
+
+/* QUEUE */
+void enqueue(queue* fronta, node* data) {
     if (fronta->first == NULL) {
         fronta->first = data;
     } else {
-        _add_end(fronta->first, data);
+        add_endQ(fronta, data);
     }
 }
 
 /* QUEUE */
-node* dequeue(queue *fronta) {
+node* dequeue(queue* fronta) {
     node *dequeued = fronta->first;
 
     if (dequeued != NULL) {
