@@ -4,7 +4,8 @@
 /* 
     Assigns the amount of 'podretezec' occurences in 'text' to memory at 
     'pocet_vyskytu' and returns a pointer to an array of their indices. 
-    Case insensitivity is guaranteed only for base ASCII characters (!).
+    (!) Case insensitivity (which, while not explicitly required by the 
+    assignment, makes sense) is guaranteed only for 1-byte ASCII characters.
 */
 int* najdi(char* text, char* podretezec, int* pocet_vyskytu) {
     *pocet_vyskytu = 0;
