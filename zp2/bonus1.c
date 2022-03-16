@@ -1,19 +1,19 @@
 /*
-    I left the assignment "test" in uncommented by accident :^).
+    I left the assignment "test" uncommented by accident :^).
     Either way; I don't think there was anything code-crashing
     wrong with 'occurences'. At first I thought so and went
     on to create a Python script to check if the code crashes
-    (which I'm including it as well for... you know, style
-    points), as I didn't experience a single crash while
-    working on this. Then, after learning absolutely nothing,
-    I thought about it and came to the conclusion that I'm
-    missing a return statement, the value of which automated 
-    tests usually check (which is only a problem with pre-C99
-    standard compilers to be fair). I also changed the 'occurences'
-    declaration to explicitly allocate memory (in case declarations
-    don't do that in older standards either) and also added memory
-    releasing to clean up. Also also - the test is now commented
-    (as it should be).
+    (which I'm including as well for... you know, style points),
+    as I didn't experience a single crash while working on this.
+    Then, after learning absolutely nothing, I thought about it 
+    and came to the conclusion that I'm missing a return statement,
+    the value of which automated tests usually check (which is only
+    a problem with pre-C99 standard compilers to be fair). I also
+    changed the 'occurences' declaration to explicitly allocate
+    memory (in case declarations don't do that in older standards
+    either) and also added memory releasing to clean up.
+    
+    Also also - the test is now commented (as it should be) :^))).
 
     On the off chance that whatever problem you ran into still
     persists, it's safe to say that I'm stumped.
