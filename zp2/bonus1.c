@@ -11,9 +11,9 @@
     a problem with pre-C99 standard compilers to be fair). I also
     changed the 'occurences' declaration to explicitly allocate
     memory (in case declarations don't do that in older standards
-    either) and also added memory releasing to clean up.
-    
-    Also also - the test is now commented (as it should be) :^))).
+    either) and added memory releasing to clean up too.
+
+    Also also - the "test" is now commented (as it should be) :^))).
 
     On the off chance that whatever problem you ran into still
     persists, it's safe to say that I'm stumped.
