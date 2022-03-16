@@ -1,3 +1,24 @@
+/*
+    I left the assignment "test" in uncommented by accident :^).
+    Either way; I don't think there was anything code-crashing
+    wrong with 'occurences'. At first I thought so and went
+    on to create a Python script to check if the code crashes
+    (which I'm including it as well for... you know, style
+    points), as I didn't experience a single crash while
+    working on this. Then, after learning absolutely nothing,
+    I thought about it and came to the conclusion that I'm
+    missing a return statement, the value of which automated 
+    tests usually check (which is only a problem with pre-C99
+    standard compilers to be fair). I also changed the 'occurences'
+    declaration to explicitly allocate memory (in case declarations
+    don't do that in older standards either) and also added memory
+    releasing to clean up. Also also - the test is now commented
+    (as it should be).
+
+    On the off chance that whatever problem you ran into still
+    persists, it's safe to say that I'm stumped.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -18,7 +39,7 @@ int* najdi(char* text, char* podretezec, int* pocet_vyskytu) {
         for (int j = 0; podretezec[j]; j += 1) {
             /* 
                 Convert lower to upper case ASCII - probably breaks non-ASCII
-                comparison, but I am NOT straying away from 1-byte characters.
+                comparison, but I am not straying away from 1-byte characters >:).
             */
             if (text[i + j] - 32 * (text[i + j] > 96 && text[i + j] < 123) != podretezec[j] - 32 * (podretezec[j] > 96 && podretezec[j] < 123)) {
                 identical = 0;
@@ -37,12 +58,17 @@ int* najdi(char* text, char* podretezec, int* pocet_vyskytu) {
 }
 
 int main(void) {
-    int* occurences;
-    char* text = "Máma mele maso~";  // á is a non-ASCII (2 byte) character zzz
-    int* test = najdi(text, "ma", occurences);
+    // int* occurences = malloc(sizeof(int));
+    // char* text = "Máma mele maso~";  // á is a non-ASCII (2 byte) character zzz
+    // int* test = najdi(text, "ma", occurences);
 
-    printf("Number of occurences: %i\n", *occurences);
-    for (int i = 0; i < *occurences; i += 1) {
-        printf(" @ index %i\n", test[i]);
-    }
+    // printf("Number of occurences: %i\n", *occurences);
+    // for (int i = 0; i < *occurences; i += 1) {
+    //     printf(" @ index %i\n", test[i]);
+    // }
+
+    // free(occurences);
+    // free(test);
+
+    return 0;
 }
