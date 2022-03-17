@@ -64,7 +64,7 @@ int _depth(node* n) {
 }
 
 int depth(tree t) {
-    return 1 + max(_depth(t.root->left), _depth(t.root->right));
+    return _depth(t.root);
 }
 
 int tree_max(node *root) {
