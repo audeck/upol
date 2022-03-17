@@ -71,4 +71,6 @@ int main(void) {
     // printf("%i ", res);
     // printf("%i ", resB);
     // printf("%i\n", resI);
+    
+    return 0;
 }

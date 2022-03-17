@@ -140,4 +140,6 @@ int main(void) {
     for (int i = 0; i < ENTRIES; i++) {
         printf("    - %s %s aged %i.\n", debtors[i].name, debtors[i].surname, debtors[i].age);
     }
+
+    return 0;
 }
