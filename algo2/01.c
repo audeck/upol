@@ -122,24 +122,24 @@ void sort(struct dir* debtors) {
 
 
 int main(void) {
-    print_debt(debtors, "Dwight", "House");
-    print_debt(debtors, "Anna", "Liszt");
+    // print_debt(debtors, "Dwight", "House");
+    // print_debt(debtors, "Anna", "Liszt");
 
-    struct dir max_debtor = max(debtors);
-    printf(" - %s %s has the highest debt! (%i)\n", max_debtor.name, max_debtor.surname, max_debtor.debt);
+    // struct dir max_debtor = max(debtors);
+    // printf(" - %s %s has the highest debt! (%i)\n", max_debtor.name, max_debtor.surname, max_debtor.debt);
     
-    increase_debt(debtors, max_debtor.name, max_debtor.surname, 1000);
-    max_debtor = max(debtors);
-    printf(" - %s %s's debt has increased! (%i)\n", max_debtor.name, max_debtor.surname, max_debtor.debt);
+    // increase_debt(debtors, max_debtor.name, max_debtor.surname, 1000);
+    // max_debtor = max(debtors);
+    // printf(" - %s %s's debt has increased! (%i)\n", max_debtor.name, max_debtor.surname, max_debtor.debt);
 
-    struct dir youngest = nth_youngest(debtors, 2);
-    printf(" - The 2nd youngest debtor is %s %s! (age %i)\n", youngest.name, youngest.surname, youngest.age);
+    // struct dir youngest = nth_youngest(debtors, 2);
+    // printf(" - The 2nd youngest debtor is %s %s! (age %i)\n", youngest.name, youngest.surname, youngest.age);
 
-    sort(debtors);
-    printf(" - SORTED:\n");
-    for (int i = 0; i < ENTRIES; i++) {
-        printf("    - %s %s aged %i.\n", debtors[i].name, debtors[i].surname, debtors[i].age);
-    }
+    // sort(debtors);
+    // printf(" - SORTED:\n");
+    // for (int i = 0; i < ENTRIES; i++) {
+    //     printf("    - %s %s aged %i.\n", debtors[i].name, debtors[i].surname, debtors[i].age);
+    // }
 
-    return 0;
+    // return 0;
 }

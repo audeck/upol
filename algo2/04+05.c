@@ -180,7 +180,7 @@ int tree_remove(tree *t, int data) {
 
         /* Remove 'left_max' from tree & error check just in case */
         if (!tree_remove(t, left_max)) {
-            fprintf(stderr, "[EXCEPTION @ tree_remove(tree*, int)] Something went terribly wrong\n");
+            fprintf(stderr, "[tree_remove() (EXCEPTION)] Something went terribly wrong\n");
         }
 
         /* Swap in 'left_max' to current node's data */
@@ -189,7 +189,7 @@ int tree_remove(tree *t, int data) {
     }
 
     /* ??? */
-    fprintf(stderr, "[EXCEPTION @ tree_remove(tree*, int)] Reached (what should be) an unreachable return\n");
+    fprintf(stderr, "[tree_remove() (EXCEPTION)] Reached (what should be) an unreachable return\n");
     return 0;
 }
 
@@ -241,7 +241,7 @@ int dequeue(queue* q) {
         return popped_data;
     }
 
-    fprintf(stderr, "[EXCEPTION @ dequeue(queue*)] Dequeued from an empty queue (returned 0)\n");
+    fprintf(stderr, "[dequeue() (EXCEPTION)] Dequeued from an empty queue (returned 0)\n");
     return 0;
 }
 
