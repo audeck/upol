@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Array size is stored in the "-1st element" of the array (array of n elements is therefore size n+1) */
+/* I store an array's size in it's "-1st element" (array of n elements is therefore size n+1) */
 
 int sequence_search(int array[], int element) {
     /* Array size */
