@@ -72,5 +72,8 @@ int main(void) {
     // printf("%i ", resB);
     // printf("%i\n", resI);
     
+    // array1--;
+    // free(array1);
+    
     return 0;
 }
