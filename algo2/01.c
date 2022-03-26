@@ -98,13 +98,14 @@ struct dir* _partition(struct dir* debtors, int l, int r, int n) {
 /* Returns the n-th youngest debtor */
 struct dir nth_youngest(struct dir* debtors, int n) {
     if (n > ENTRIES) {
-        fprintf(stderr, "[nth_youngest (ERROR)]: n is out of bounds (n > ENTRIES)");
+        fprintf(stderr, "[ERROR in nth_youngest()]: n is out of bounds (n > ENTRIES)");
+        return NULL;
     } else {
         return *_partition(debtors, 0, ENTRIES - 1, n);
     }
 }
 
-/* Sorts the struct array by age using insertion sort (lazy, I know) */
+/* Sorts the struct array by age using insertion sort */
 void sort(struct dir* debtors) {
     for (int i = 1; i < ENTRIES; i++) {
         struct dir tmp = debtors[i];
@@ -141,5 +142,5 @@ int main(void) {
     //     printf("    - %s %s aged %i.\n", debtors[i].name, debtors[i].surname, debtors[i].age);
     // }
 
-    // return 0;
+    return 0;
 }

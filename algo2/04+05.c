@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <math.h>
 
-/* NO MALLOC SUCCESS CHECKS (OMEGALUL) */
+/* TODO: malloc() success checks(?) */
 
 #define max(a, b) ((a > b) ? a : b)
 
+/* ~~~ Types & constructors ~~~ */
 
 /* Tree & node usage in this file is limited to binary search trees */
 typedef struct node {
@@ -54,7 +55,6 @@ void free_tree(tree* tree) {
     free(tree);
 }
 
-
 /* A 'node' wrapper for usage with 'queue' */
 typedef struct qnode {
     node* node;
@@ -71,7 +71,6 @@ qnode* create_qnode(node* node) {
 
     return ptr;
 }
-
 
 /* O(1) q&dq queue 8^) */
 typedef struct queue {
@@ -121,7 +120,7 @@ int dequeue(queue* q) {
     return 0;
 }
 
-/* Dequeues a qnode with node == NULL (and doesn't return anything) */
+/* Dequeues a qnode with node == NULL (and doesn't return anything) - used exclusivelly in print_structured() */
 void _dequeue_null(queue* q) {
     if (q->first == NULL) {
         fprintf(stderr, "[dequeue_null() (WARNING)] Tried to dequeue from an empty queue\n");
@@ -132,7 +131,7 @@ void _dequeue_null(queue* q) {
     free(popped);
 }
 
-/* ~~~~~ */
+/* ~~~ Functions ~~~ */
 
 /* Private print_in_order() helper */
 void _print_in_order(node* n) {
@@ -300,7 +299,7 @@ int tree_remove(tree *t, int data) {
 
         /* Remove 'left_max' from tree & error check just in case */
         if (!tree_remove(t, left_max)) {
-            fprintf(stderr, "[tree_remove() (EXCEPTION)] Something went terribly wrong\n");
+            fprintf(stderr, "[ERROR in tree_remove()] Something went terribly wrong\n");
         }
 
         /* Swap in 'left_max' to current node's data */
@@ -309,7 +308,7 @@ int tree_remove(tree *t, int data) {
     }
 
     /* ??? */
-    fprintf(stderr, "[tree_remove() (EXCEPTION)] Reached (what should be) an unreachable return\n");
+    fprintf(stderr, "[ERROR in tree_remove()] Reached (what should be) an unreachable return\n");
     return 0;
 }
 
@@ -338,14 +337,8 @@ void print_bft(tree *t) {
             printf("%i ", dequeue(print_queue));
         }
 
+        free(print_queue);
         printf("\n");
-    }
-}
-
-/* TODO? */
-void root_insert(node* root, node* new_root) {
-    if (root != NULL) {
-
     }
 }
 
@@ -410,9 +403,11 @@ void print_structured(tree* t) {
         /* Print a trailing new-line */
         printf("\n");
     }
+
+    free(print_queue);
 }
 
-/* ~~~~~ */
+/* ~~~ MAIN ~~~ */
 
 int main(void) {
     // tree* bst = create_tree();
