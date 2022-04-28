@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
+
+#define SIZE 127
 
 typedef struct node {
     char* data;
@@ -48,9 +51,13 @@ typedef struct {
     node* start;
 } list;
 
+void free_list(list* list) {
+    // TODO
+}
+
 typedef struct {
-    int (*hash)(char*);
     list** data_lists;
+    int (*hash)(char*);
 } chaining_table;
 
 /* Allocates a chaining_table with data_lists of given size and hash function, returns it's pointer */
@@ -95,6 +102,62 @@ chaining_table* create_chaining_table(int size, int (*hash)(char*)) {
     }
 
     return table;
+}
+
+/* Deallocates a chaining table */
+void free_chaining_table(chaining_table* table) {
+    
+}
+
+typedef struct {
+    char** data;
+    int data_size;
+    int (*hash)(char*);
+    int (*probe)(int, int);
+} oa_table;
+
+/* Allocates an open-addressing table and returns it's pointer */
+oa_table* create_oa_table(int size, int (*hash)(char*), int (*probe)(int, int)) {
+    /* Allocate table */
+    oa_table* table = (*oa_table) malloc(sizeof(oa_table));
+
+    /* Check malloc success */
+    if (table == NULL) {
+        fprintf(stderr, "[ERROR in create_oa_table()]: Failed to allocate table");
+        return NULL;
+    }
+
+    /* Allocate data array */
+    table->data = (char**) malloc(size * sizeof(char*));
+
+    /* Check malloc success */
+    if (table->data == NULL) {
+        fprintf(stderr, "[ERROR in create_oa_table()]: Failed to allocate data");
+        free(table);
+        return NULL;
+    }
+
+    /* Initialize data array */
+    for (int i = 0; i < size; i += 1) {
+        table->data[i] = NULL;
+    }
+
+    /* Assign remaining "fields" */
+    table->data_size = size;
+    table->hash = hash;
+    table->probe = probe;
+
+    return table;
+}
+
+/* Deallocates an open-addressing table */
+void free_oa_table(oa_table* table) {
+    /* Free all allocated strings */
+    for (int i = 0; i < table->data_size; i += 1) {
+        free(table->data[i]);
+    }
+
+    free(table);
 }
 
 /* Inserts a new node containing data to data_lists[index] (returns 1 if successful, 0 if not) */
@@ -179,4 +242,40 @@ int contains_ct(char* data, chaining_table* table) {
     node* found = find_node(data, table->data_lists[index]);
 
     return (found != NULL) ? 1 : 0;
+}
+
+int ascii_hash(char* text) {
+    unsigned long long hash = 0;
+    int text_len = strlen(text);
+    int mod = SIZE;
+
+    for (int i = 0; i < text_len; i += 1) {
+        hash += text[i] * (int) pow(128, (text_len - (i + 1)));
+    }
+
+    hash = hash % mod;
+
+    return hash;
+}
+
+int insert_string(char* string, char** charray) {
+
+}
+
+int add_oat(char* data, oa_table* table) {
+    int init_hash = table->hash(data);
+
+    for (int i = 0; i < table->data_size; i += 1) {
+        int index = table->probe(init_hash, i);
+
+        if (table->data[index] == NULL) {
+            // Insert string to string array??? TODO
+        }
+    }
+}
+
+
+
+int main(void) {
+    return 0;
 }
