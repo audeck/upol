@@ -5,7 +5,7 @@
 #define VYSKA 5
 
 /* Should be noted that ##__VA_ARGS__ isn't standard C, but makes the macro more readable */
-#define VYTVOR(x, y, ...) (vytvor(x, y, ##__VA_ARGS__, 0));
+#define VYTVOR(x, y, ...) (vytvor(x, y, ##__VA_ARGS__, 0.0));
 
 typedef struct obdelnik {
     double x;
@@ -18,28 +18,22 @@ typedef struct obdelnik {
 obdelnik vytvor(double x, double y, ...) {
     obdelnik rect = {x, y};
 
+    /* Initialize and start va_list */
     va_list args;
     va_start(args, y);
 
-    rect.sirka = va_arg(args, double);  // Argument type can be int or double
-
-    if (rect.sirka == 0) {
-        /* Default sirka, vyska values */
+    /* Assign optional arguments and compare them to 0 (= terminating "argument") */
+    if ((rect.sirka = va_arg(args, double)) == 0) {
+        /* No optionals -> default sirka, vyska values */
         rect.sirka = SIRKA;
         rect.vyska = VYSKA;
-
-        /* End early */
-        va_end(args);
-        return rect;
     }
-
-    rect.vyska = va_arg(args, double);
-
-    if (rect.vyska == 0) {
-        /* Rectangle is square */
+    else if ((rect.vyska = va_arg(args, double)) == 0) {
+        /* One optional -> rectangle is a square */
         rect.vyska = rect.sirka;
     }
 
+    /* End va_list and return rectangle */
     va_end(args);
     return rect;
 }
