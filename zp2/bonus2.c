@@ -18,7 +18,7 @@ typedef struct obdelnik {
 obdelnik vytvor(double x, double y, ...) {
     obdelnik rect = {x, y};
 
-    /* Initialize and start va_list */
+    /* Initialize and set y as va_list start */
     va_list args;
     va_start(args, y);
 
@@ -33,7 +33,7 @@ obdelnik vytvor(double x, double y, ...) {
         rect.vyska = rect.sirka;
     }
 
-    /* End va_list and return rectangle */
+    /* Clear va_list and return rectangle */
     va_end(args);
     return rect;
 }
