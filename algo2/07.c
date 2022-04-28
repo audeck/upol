@@ -204,7 +204,7 @@ void copy_end(node* recipient, node* donor, int merger) {
 
     for (int i = 0; i < d_n; i += 1) {
         recipient->keys[r_n + i] = donor->keys[i];
-        recipient->children[r_n + i] = donor->children[i]
+        recipient->children[r_n + i] = donor->children[i];
     }
 
     recipient->children[r_n + d_n + 1] = donor->children[d_n];
@@ -213,9 +213,9 @@ void copy_end(node* recipient, node* donor, int merger) {
 }
 
 void delete(b_tree* tree, int data) {
-    search_result* search = search(tree->root, data);
-    node* target = search->node;
-    int index = search->index;
+    search_result* searc = search(tree->root, data);
+    node* target = searc->node;
+    int index = searc->index;
 
     if (target->leaf) {
         shift_left(target, index);
