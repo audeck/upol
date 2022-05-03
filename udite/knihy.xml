@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+
+<knihy>
+<kniha>
+    <ISBN>K003</ISBN>
+    <nazev>Stopařův průvodce po galaxii</nazev>
+    <vydavatel>MF</vydavatel>
+    <rok_vydani>1985</rok_vydani>
+    <pocet_stran>214</pocet_stran>
+    <cena>120</cena>
+    <zanr>scifi</zanr>
+    <typ>kniha</typ>
+    <posledni_pujcka>
+        <jmeno>Mike Rophone</jmeno>
+        <datum>2022-04-06</datum>
+        <vracena>false</vracena>
+    </posledni_pujcka>
+</kniha>
+
+<kniha>
+    <ISBN>K045</ISBN>
+    <nazev>Pán prstenů - Dvě věže</nazev>
+    <vydavatel>MF</vydavatel>
+    <rok_vydani>1948</rok_vydani>
+    <pocet_stran>251</pocet_stran>
+    <cena>240</cena>
+    <zanr>fantasy</zanr>
+    <typ>kniha</typ>
+    <posledni_pujcka>
+        <jmeno>Dwight House</jmeno>
+        <datum>2021-11-27</datum>
+        <vracena>true</vracena>
+    </posledni_pujcka>
+</kniha>
+
+<kniha>
+    <ISBN>K051</ISBN>
+    <nazev>Kedrigern a hlas pro princeznu</nazev>
+    <vydavatel>MF</vydavatel>
+    <rok_vydani>1996</rok_vydani>
+    <cena>53</cena>
+    <zanr>fantasy</zanr>
+    <typ>kniha</typ>
+    <posledni_pujcka>
+        <jmeno>Anna Liszt</jmeno>
+        <datum>2021-06-14</datum>
+        <vracena>true</vracena>
+    </posledni_pujcka>
+</kniha>
+
+<kniha>
+    <ISBN>K043</ISBN>
+    <nazev>Hobit</nazev>
+    <vydavatel>MF</vydavatel>
+    <rok_vydani>1950</rok_vydani>
+    <pocet_stran>410</pocet_stran>
+    <cena>178</cena>
+    <zanr>fantasy</zanr>
+    <typ>kniha</typ>
+    <posledni_pujcka>
+        <jmeno>Hilda Climb</jmeno>
+        <datum>2022-03-21</datum>
+        <vracena>false</vracena>
+    </posledni_pujcka>
+</kniha>
+
+<kniha>
+    <ISBN>K025</ISBN>
+    <nazev>Barva kouzel</nazev>
+    <vydavatel>Talpress</vydavatel>
+    <rok_vydani>1989</rok_vydani>
+    <pocet_stran>221</pocet_stran>
+    <cena>358</cena>
+    <zanr>fantasy</zanr>
+    <typ>ebook</typ>
+    <posledni_pujcka>
+        <jmeno>Jack Cass</jmeno>
+        <datum>1999-07-11</datum>
+        <vracena>false</vracena>
+    </posledni_pujcka>
+</kniha>
+
+<kniha>
+    <ISBN>K026</ISBN>
+    <nazev>Stráže! Stráže!</nazev>
+    <vydavatel>Talpress</vydavatel>
+    <rok_vydani>2000</rok_vydani>
+    <cena>214</cena>
+    <zanr>fantasy</zanr>
+    <typ>kniha</typ>
+    <posledni_pujcka>
+        <jmeno>Bob Prob</jmeno>
+        <datum>2022-01-05</datum>
+        <vracena>true</vracena>
+    </posledni_pujcka>
+</kniha>
+
+<kniha>
+    <ISBN>K027</ISBN>
+    <nazev>Lehké fantastično</nazev>
+    <vydavatel>Talpress</vydavatel>
+    <rok_vydani>1999</rok_vydani>
+    <pocet_stran>145</pocet_stran>
+    <cena>415</cena>
+    <zanr>fantasy</zanr>
+    <typ>ebook</typ>
+    <posledni_pujcka>
+        <jmeno>Alice Ability</jmeno>
+        <datum>2021-09-01</datum>
+        <vracena>true</vracena>
+    </posledni_pujcka>
+</kniha>
+</knihy>

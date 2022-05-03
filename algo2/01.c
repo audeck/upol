@@ -96,12 +96,12 @@ struct dir* _partition(struct dir* debtors, int l, int r, int n) {
 }
 
 /* Returns the n-th youngest debtor */
-struct dir nth_youngest(struct dir* debtors, int n) {
+struct dir* nth_youngest(struct dir* debtors, int n) {
     if (n > ENTRIES) {
         fprintf(stderr, "[ERROR in nth_youngest()]: n is out of bounds (n > ENTRIES)");
         return NULL;
     } else {
-        return *_partition(debtors, 0, ENTRIES - 1, n);
+        return _partition(debtors, 0, ENTRIES - 1, n);
     }
 }
 
@@ -133,7 +133,7 @@ int main(void) {
     // max_debtor = max(debtors);
     // printf(" - %s %s's debt has increased! (%i)\n", max_debtor.name, max_debtor.surname, max_debtor.debt);
 
-    // struct dir youngest = nth_youngest(debtors, 2);
+    // struct dir youngest = *nth_youngest(debtors, 2);
     // printf(" - The 2nd youngest debtor is %s %s! (age %i)\n", youngest.name, youngest.surname, youngest.age);
 
     // sort(debtors);

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="knihy">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="kniha" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="ISBN" type="xs:string" />
+                            <xs:element name="nazev" type="xs:string" />
+                            <xs:element name="vydavatel" type="xs:string" />
+                            <xs:element name="rok_vydani" type="xs:int" />
+                            <xs:element name="pocet_stran" minOccurs="0" nillable="true">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="1" />
+                                        <xs:maxInclusive value="2000" />
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="cena" type="xs:int" />
+                            <xs:element name="zanr" type="xs:string" />
+                            <xs:element name="typ">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="kniha" />
+                                        <xs:enumeration value="ebook" />
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="posledni_pujcka">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="jmeno" type="xs:string" />
+                                        <xs:element name="datum" type="xs:date" />
+                                        <xs:element name="vracena" type="xs:boolean" />
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
