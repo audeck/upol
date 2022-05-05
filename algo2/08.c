@@ -47,16 +47,40 @@ void free_node(node* node) {
     free(node);
 }
 
-typedef struct {
+typedef struct list {
     node* start;
 } list;
 
-void free_list(list* list) {
-    // TODO
+list* create_list(node* start_node) {
+    list* new_list = (list*) malloc(sizeof(list));
+
+    if (new_list == NULL) {
+        fprintf(stderr, "[ERROR in create_list()]: Failed to allocate node");
+        return NULL;
+    }
+
+    new_list->start = start_node;
+
+    return new_list;
 }
 
-typedef struct {
+void free_list(list* list) {
+    node* current = list->start;
+    node* next = (current == NULL) ? NULL : current->next;
+
+    while (next != NULL) {
+        free(current);
+        current = next;
+        next = current->next;
+    }
+
+    // In case initial next assignment is NULL (free(NULL) is defined behaviour)
+    free(current);
+}
+
+typedef struct chaining_table {
     list** data_lists;
+    int    size;
     int (*hash)(char*);
 } chaining_table;
 
@@ -71,7 +95,8 @@ chaining_table* create_chaining_table(int size, int (*hash)(char*)) {
         return NULL;
     }
 
-    /* Assign hash */
+    /* Assign hash & data size */
+    table->size = size;
     table->hash = hash;
 
     /* Allocate array of data lists */
@@ -86,19 +111,17 @@ chaining_table* create_chaining_table(int size, int (*hash)(char*)) {
 
     /* Initialize data_lists */
     for (int i = 0; i < size; i += 1) {
-        /* Allocate list */
-        table->data_lists[i] = (list*) malloc(sizeof(list));
+        table->data_lists[i] = create_list(NULL);
 
         /* Check malloc success */
         if (table->data_lists[i] == NULL) {
-            fprintf(stderr, "[ERROR in create_chaining_table()]: Failed to allocate list");
+            fprintf(stderr, "[ERROR in create_chaining_table()]: Failed to allocate a data_list");
+            for (int j = i - 1; j >= 0; j -= 1) {
+                free(table->data_lists[j]);
+            }
             free(table->data_lists);
             free(table);
-            return NULL;
-        }
-
-        /* Initialize start pointer */
-        table->data_lists[i]->start = NULL;
+        } 
     }
 
     return table;
@@ -106,12 +129,16 @@ chaining_table* create_chaining_table(int size, int (*hash)(char*)) {
 
 /* Deallocates a chaining table */
 void free_chaining_table(chaining_table* table) {
-    
+    int size = table->size;
+
+    for (int i = 0; i < size; i += 1) {
+        free_list(table->data_lists[i]);
+    }
 }
 
-typedef struct {
+typedef struct oa_table {
     char** data;
-    int data_size;
+    int    size;
     int (*hash)(char*);
     int (*probe)(int, int);
 } oa_table;
@@ -143,7 +170,7 @@ oa_table* create_oa_table(int size, int (*hash)(char*), int (*probe)(int, int)) 
     }
 
     /* Assign remaining "fields" */
-    table->data_size = size;
+    table->size = size;
     table->hash = hash;
     table->probe = probe;
 
@@ -153,20 +180,20 @@ oa_table* create_oa_table(int size, int (*hash)(char*), int (*probe)(int, int)) 
 /* Deallocates an open-addressing table */
 void free_oa_table(oa_table* table) {
     /* Free all allocated strings */
-    for (int i = 0; i < table->data_size; i += 1) {
+    for (int i = 0; i < table->size; i += 1) {
         free(table->data[i]);
     }
 
     free(table);
 }
 
-/* Inserts a new node containing data to data_lists[index] (returns 1 if successful, 0 if not) */
+/* Inserts a new node containing data to data_list (returns 1 if successful, 0 if not) */
 int insert_node(char* data, list* data_list) {
     /* Create a new data node */
     node* new_node = create_node(data);
     if (new_node == NULL) return 0;  // In case malloc fails
 
-    /* Insert new node to the start of data_lists[index] */
+    /* Insert new node at the start of data_list */
     node* old_start = data_list->start;
     new_node->next = old_start;
     if (old_start != NULL) old_start->prev = new_node;
@@ -219,7 +246,7 @@ void remove_node(node* removed, list* data_list) {
 /* Adds data to chaining table (returns 1 if successful, 0 if not) */
 int add_ct(char* data, chaining_table* table) {
     int index = table->hash(data);
-    return insert_node(data, table->data_lists[index]);  // 0 or 1
+    return insert_node(data, table->data_lists[index]);
 }
 
 /* Removes (first occurence of) data from chaining table (returns 1 if successful, 0 if not) */
@@ -249,7 +276,7 @@ int ascii_hash(char* text) {
     int text_len = strlen(text);
     int mod = SIZE;
 
-    for (int i = 0; i < text_len; i += 1) {
+    for (int i = 0; i <= text_len; i += 1) {
         hash += text[i] * (int) pow(128, (text_len - (i + 1)));
     }
 
@@ -261,11 +288,11 @@ int ascii_hash(char* text) {
 int add_oat(char* data, oa_table* table) {
     int init_hash = table->hash(data);
 
-    for (int i = 0; i < table->data_size; i += 1) {
+    for (int i = 0; i < table->size; i += 1) {
         int index = table->probe(init_hash, i);
 
         if (table->data[index] == NULL) {
-            int len = strlen(data);  // Could be len + 1
+            int len = strlen(data) + 1;
             table->data[index] = (char*) malloc(len * sizeof(char));
             strcpy(data, table->data[index]);
             return 1;
@@ -275,8 +302,54 @@ int add_oat(char* data, oa_table* table) {
     return 0;
 }
 
+void print_list(list* list) {
+    node* current = list->start;
+    int first = 1;
+
+    (current != NULL) ? printf("[") : printf("");
+    while (current != NULL) {
+        (first) ? printf("%s", current->data) : printf(", %s", current->data);
+        first = 0;
+        current = current->next;
+    }
+    (first == 0) ? printf("]\n") : printf("");
+}
+
+void print_chaining_table(chaining_table* table) {
+    for (int i = 0; i < table->size; i += 1) {
+        print_list(table->data_lists[i]);
+    }
+}
+
 
 
 int main(void) {
+    chaining_table* table_c = create_chaining_table(SIZE, ascii_hash);
+
+    int output;
+
+    if ((output = add_ct("abc", table_c)) == 0) {
+        fprintf(stderr, "[ERROR in main()]: Failed to add abc to chaining table");
+    }
+    if ((output = add_ct("sam", table_c)) == 0) {
+        fprintf(stderr, "[ERROR in main()]: Failed to add sam to chaining table");
+    }
+    if ((output = add_ct("int", table_c)) == 0) {
+        fprintf(stderr, "[ERROR in main()]: Failed to add int to chaining table");
+    }
+    if ((output = add_ct("bca", table_c)) == 0) {  // Collides with "abc"
+        fprintf(stderr, "[ERROR in main()]: Failed to add bca to chaining table");
+    }
+    
+    print_chaining_table(table_c);
+
+    if ((output = remove_ct("int", table_c)) == 0) {
+        fprintf(stderr, "[ERROR in main()]: Failed to remove int from chaining table");
+    }
+
+    print_chaining_table(table_c);
+
+    free_chaining_table(table_c);
+
     return 0;
 }
