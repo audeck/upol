@@ -119,7 +119,7 @@ typedef struct {
 /* Allocates an open-addressing table and returns it's pointer */
 oa_table* create_oa_table(int size, int (*hash)(char*), int (*probe)(int, int)) {
     /* Allocate table */
-    oa_table* table = (*oa_table) malloc(sizeof(oa_table));
+    oa_table* table = (oa_table*) malloc(sizeof(oa_table));
 
     /* Check malloc success */
     if (table == NULL) {
@@ -258,10 +258,6 @@ int ascii_hash(char* text) {
     return hash;
 }
 
-int insert_string(char* string, char** charray) {
-
-}
-
 int add_oat(char* data, oa_table* table) {
     int init_hash = table->hash(data);
 
@@ -269,9 +265,14 @@ int add_oat(char* data, oa_table* table) {
         int index = table->probe(init_hash, i);
 
         if (table->data[index] == NULL) {
-            // Insert string to string array??? TODO
+            int len = strlen(data);  // Could be len + 1
+            table->data[index] = (char*) malloc(len * sizeof(char));
+            strcpy(data, table->data[index]);
+            return 1;
         }
     }
+
+    return 0;
 }
 
 
