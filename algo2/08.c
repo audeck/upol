@@ -3,7 +3,9 @@
 #include <string.h>
 #include <math.h>
 
-#define SIZE 127
+#define SIZE 7
+
+/* ~~~ Structs and methods ~~~ */
 
 typedef struct node {
     char* data;
@@ -52,11 +54,21 @@ typedef struct {
 } list;
 
 void free_list(list* list) {
-    // TODO
+    node* current = list->start;
+    node* previous;
+
+    while (current != NULL) {
+        previous = current;
+        current = current->next;
+        free_node(previous);
+    }
+
+    free(list);
 }
 
 typedef struct {
     list** data_lists;
+    int size;
     int (*hash)(char*);
 } chaining_table;
 
@@ -71,8 +83,9 @@ chaining_table* create_chaining_table(int size, int (*hash)(char*)) {
         return NULL;
     }
 
-    /* Assign hash */
+    /* Assign hash & size */
     table->hash = hash;
+    table->size = size;
 
     /* Allocate array of data lists */
     table->data_lists = (list**) malloc(size * sizeof(list*));
@@ -106,7 +119,12 @@ chaining_table* create_chaining_table(int size, int (*hash)(char*)) {
 
 /* Deallocates a chaining table */
 void free_chaining_table(chaining_table* table) {
-    
+    for (int i = 0; i < table->size; i += 1) {
+        free_list(table->data_lists[i]);
+    }
+
+    free(table->data_lists);
+    free(table);
 }
 
 typedef struct {
@@ -160,6 +178,8 @@ void free_oa_table(oa_table* table) {
     free(table);
 }
 
+/* ~~~ Functions ~~~ */
+
 /* Inserts a new node containing data to data_lists[index] (returns 1 if successful, 0 if not) */
 int insert_node(char* data, list* data_list) {
     /* Create a new data node */
@@ -198,22 +218,35 @@ void remove_node(node* removed, list* data_list) {
 
     if (previous == NULL && next == NULL) {
         data_list->start = NULL;
-        free_node(removed);
     }
     else if (previous == NULL) {
         data_list->start = next;
         next->prev = NULL;
-        free_node(removed);
     }
     else if (next == NULL) {
         previous->next = NULL;
-        free_node(removed);
     }
     else {
         previous->next = next;
         next->prev = previous;
-        free_node(removed);
     }
+
+    free_node(removed);
+}
+
+void print_list(list* list) {
+    node* current = list->start;
+    char first = 1;
+
+    while (current != NULL) {
+        if (!first) printf(", ");
+        printf("%s", current->data);
+
+        first = 0;
+        current = current->next;
+    }
+
+    printf("\n");
 }
 
 /* Adds data to chaining table (returns 1 if successful, 0 if not) */
@@ -244,6 +277,80 @@ int contains_ct(char* data, chaining_table* table) {
     return (found != NULL) ? 1 : 0;
 }
 
+void print_ct(chaining_table* table) {
+    printf("Chaining table:\n");
+    for (int i = 0; i < table->size; i += 1) {
+        printf(" - ");
+        print_list(table->data_lists[i]);
+    }
+}
+
+/* Adds data to oa_table (returns 1 if successful, 0 if not) */
+int add_oat(char* data, oa_table* table) {
+    int data_hash = table->hash(data);
+    int index;
+
+    for (int i = 0; i < table->data_size; i += 1) {
+        index = table->probe(data_hash, i);
+
+        if (table->data[index] == NULL) {
+            table->data[index] = (char*) malloc(strlen(data) + 1 * sizeof(char));
+            strcpy(table->data[index], data);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+/* Removes the first occurence of data in oa_table (returns 1 if successful, 0 if not) */
+int remove_oat(char* data, oa_table* table) {
+    int data_hash = table->hash(data);
+    char* cur_data;
+    int index;
+
+    for (int i = 0; i < table->data_size; i += 1) {
+        index = table->probe(data_hash, i);
+        cur_data = table->data[index];
+
+        if (cur_data != NULL && strcmp(cur_data, data) == 0) {
+            table->data[index] = NULL;
+            free(cur_data);
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+/* Returns 1 if oa_table contains data, 0 if not */
+int contains_oat(char* data, oa_table* table) {
+    int data_hash = table->hash(data);
+    char* cur_data;
+    int index;
+
+    for (int i = 0; i < table->data_size; i += 1) {
+        index = table->probe(data_hash, i);
+        cur_data = table->data[index];
+
+        if (cur_data != NULL && strcmp(cur_data, data) == 0) return 1;
+    }
+
+    return 0;
+}
+
+void print_oat(oa_table* table) {
+    char first = 1;
+
+    printf("Open-addressing table:\n - ");
+    for (int i = 0; i < table->data_size; i += 1) {
+        if (!first) printf(", ");
+        (table->data[i] == NULL) ? printf("%s", "___") : printf("%s", table->data[i]);
+        first = 0;
+    }
+    printf("\n");
+}
+
 int ascii_hash(char* text) {
     unsigned long long hash = 0;
     int text_len = strlen(text);
@@ -258,25 +365,59 @@ int ascii_hash(char* text) {
     return hash;
 }
 
-int add_oat(char* data, oa_table* table) {
-    int init_hash = table->hash(data);
-
-    for (int i = 0; i < table->data_size; i += 1) {
-        int index = table->probe(init_hash, i);
-
-        if (table->data[index] == NULL) {
-            int len = strlen(data);  // Could be len + 1
-            table->data[index] = (char*) malloc(len * sizeof(char));
-            strcpy(data, table->data[index]);
-            return 1;
-        }
-    }
-
-    return 0;
+int linear_probe(int hashed_data, int offset) {
+    return (hashed_data + offset) % SIZE;
 }
 
+int quadratic_probe(int hashed_data, int offset) {
+    return (hashed_data + offset + (offset * offset)) % SIZE;
+}
 
+/* ~~~ MAIN ~~~ */
 
 int main(void) {
+    // chaining_table* CT = create_chaining_table(SIZE, ascii_hash);
+    // oa_table* linear_OA = create_oa_table(SIZE, ascii_hash, linear_probe);
+    // oa_table* quadratic_OA = create_oa_table(SIZE, ascii_hash, quadratic_probe);
+
+    // add_ct("car", CT);
+    // add_ct("aba", CT);
+    // print_ct(CT);
+    // add_ct("abc", CT);  // "abc" collides with "car"
+    // print_ct(CT);
+    // remove_ct("car", CT);
+    // print_ct(CT);
+    // (contains_ct("abc", CT)) ? printf("CT contains abc!\n") : printf("CT doesn't contain abc!\n");
+    // (contains_ct("cba", CT)) ? printf("CT contains cba!\n") : printf("CT doesn't contain cba!\n");
+
+    // printf("\n");
+
+    // add_oat("car", linear_OA);
+    // add_oat("aba", linear_OA);
+    // print_oat(linear_OA);
+    // add_oat("abc", linear_OA);
+    // print_oat(linear_OA);
+    // remove_oat("car", linear_OA);
+    // print_oat(linear_OA);
+    // (contains_oat("abc", linear_OA)) ? printf("OAT contains abc!\n") : printf("OAT doesn't contain abc!\n");
+    // (contains_oat("cba", linear_OA)) ? printf("OAT contains cba!\n") : printf("OAT doesn't contain cba!\n");
+
+    // printf("\n");
+
+    // add_oat("car", quadratic_OA);
+    // add_oat("aba", quadratic_OA);
+    // print_oat(quadratic_OA);
+    // add_oat("abc", quadratic_OA);
+    // add_oat("car", quadratic_OA);
+    // print_oat(quadratic_OA);
+    // remove_oat("car", quadratic_OA);
+    // print_oat(quadratic_OA);
+    // (contains_oat("abc", quadratic_OA)) ? printf("OAT contains abc!\n") : printf("OAT doesn't contain abc!\n");
+    // (contains_oat("cba", quadratic_OA)) ? printf("OAT contains cba!\n") : printf("OAT doesn't contain cba!\n");
+
+    // free_chaining_table(CT);
+    // free_oa_table(linear_OA);
+    // free_oa_table(quadratic_OA);
+
     return 0;
 }

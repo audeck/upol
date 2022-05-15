@@ -1,8 +1,14 @@
+
+/* All trees and tree usage in this file are AVL (bst-)trees */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #define max(a, b) ((a > b) ? a : b)
+
+/* ~~~ Structs and methods ~~~ */
 
 typedef struct node {
     int data;
@@ -37,7 +43,7 @@ tree* create_tree() {
     tree* ptr = (tree*) malloc(sizeof(tree));
 
     if (ptr == NULL) {
-        fprintf(stderr, "[ERROR in create_tree()]: Failed to allocate tree");
+        fprintf(stderr, "[ERROR in create_avl_tree()]: Failed to allocate avl_tree");
         return NULL;
     }
 
@@ -46,63 +52,73 @@ tree* create_tree() {
     return ptr;
 }
 
-
-void rotate_right(node* root) {
-    node* prev_root = root;
-    node* new_root = root->left;
-
-    /* Update parenting */
-    new_root->parent = prev_root->parent;
-    prev_root->parent = new_root;
-
-    if (prev_root->parent != NULL) {
-        if (prev_root->parent->left == prev_root) {
-            prev_root->parent->left = new_root;
-        } else {
-            prev_root->parent->right = new_root;
-        }
+void _free_all_nodes(node* node) {
+    if (node != NULL) {
+        _free_all_nodes(node->left);
+        _free_all_nodes(node->right);
+        free(node);
     }
-
-
-    /* Rearrange children */
-    prev_root->left = new_root->right;
-    new_root->right = prev_root;
-
-    /* Update balance factors */
-    prev_root->bf = 1 - new_root->bf;
-    new_root->bf -= 1;
 }
 
-void rotate_left(node* root) {
-    node* prev_root = root;
-    node* new_root = root->right;
+void free_tree(tree* tree) {
+    _free_all_nodes(tree->root);
+    free(tree);
+}
+
+/* ~~~ Functions ~~~ */
+
+/* Rotates an AVL tree "to the right" (x.left = y -> y.right = x) */
+void rotate_right(node* parent) {
+    node* child = parent->left;
+    node* grand_parent = parent->parent;
 
     /* Update parenting */
-    new_root->parent = prev_root->parent;
-    prev_root->parent = new_root;
+    child->parent = grand_parent;
+    parent->parent = child;
 
-    if (prev_root->parent != NULL) {
-        if (prev_root->parent->left == prev_root) {
-            prev_root->parent->left = new_root;
-        } else {
-            prev_root->parent->right = new_root;
-        }
+    if (grand_parent != NULL) {
+        (grand_parent->left == parent) ? (grand_parent->left = child) : (grand_parent->right = child);
     }
 
     /* Rearrange children */
-    prev_root->right = new_root->left;
-    new_root->left = prev_root;
+    parent->left = child->right;
+    if (parent->left != NULL) parent->left->parent = parent;
+    child->right = parent;
 
     /* Update balance factors */
-    prev_root->bf = new_root->bf - 1;
-    new_root->bf += 1;
+    parent->bf -= (1 + child->bf);
+    child->bf -= 1;
 }
 
-void add_node(tree* t, int data) {
+/* Rotates an AVL tree "to the left" (x.right = y -> y.left = x) */
+void rotate_left(node* parent) {
+    node* child = parent->right;
+    node* grand_parent = parent->parent;
+
+    /* Update parenting */
+    child->parent = grand_parent;
+    parent->parent = child;
+
+    if (grand_parent != NULL) {
+        (grand_parent->left == parent) ? (grand_parent->left = child) : (grand_parent->right = child);
+    }
+
+    /* Rearrange children (& update parenting!) */
+    parent->right = child->left;
+    if (parent->right != NULL) parent->right->parent = parent;
+    child->left = parent;
+
+    /* Update balance factors */
+    parent->bf += (1 - child->bf);
+    child->bf += 1;
+}
+
+/* Adds node (containing data) to tree and returns it's pointer */
+node* add_node(tree* tree, int data) {
     node* new = create_node(data);
 
     node* y = NULL;
-    node* x = t->root;
+    node* x = tree->root;
 
     while (x != NULL) {
         y = x;
@@ -114,237 +130,100 @@ void add_node(tree* t, int data) {
     }
     
     new->parent = y;
-    x = new;
 
     if (y == NULL) {
-        t->root = new;
-    } else if (new->data < y->data) {
-        y->left = new;
-    } else {
-        y->right = new;
+        tree->root = new;
+    } else  {
+        (new->data < y->data) ? (y->left = new) : (y->right = new);
     }
 
-    /* Go through the tree bottom-up & correct balance factors ('y' is always the parent of 'x') */
-    while (y != NULL) {
-        y->bf += 1 - (2 * (x == y->right));  // += 1 or += -1
-        printf("%i\n", y->bf);
+    return new;
+}
 
-        switch (y->bf) {
-            case 0:
-                return;
+/* "Balances" out an AVL tree using balance factors from start up */
+void balance(tree* tree, node* start) {
+    node* u = start->parent;
+    node* v = start;  // u is always parent of v
+    node* p;  // Used to update root if needed
 
-            case 2:
-                if (y->left->bf >= 0) {
-                    rotate_right(y);
-                } else {
-                    rotate_left(y->left);
-                    rotate_right(y);
-                }
+    while (u != NULL) {
+        /* Update balance factor */
+        (u->left == v) ? (u->bf += 1) : (u->bf -= 1);
 
-                if (y == t->root) {
-                    t->root = x;
-                }
-
-                break;
-
-            /* Should be case 2 mirrored */
-            case -2:
-                if (y->right->bf <= 0) {
-                    rotate_left(y);
-                } else {
-                    rotate_right(y->right);
-                    rotate_left(y);
-                }
-
-                if (y == t->root) {
-                    t->root = x;
-                }
-                
-                break;
+        /* Rotations */
+        if (u->bf == -2) {
+            p = u->parent;
+            if (v->bf == 1) rotate_right(v);
+            rotate_left(u);
+            if (p == NULL) tree->root = u->parent;
         }
+        if (u->bf == 2) {
+            p = u->parent;
+            if (v->bf == -1) rotate_left(v);
+            rotate_right(u);
+            if (p == NULL) tree->root = u->parent;
+        } 
 
-        /* Shift 'x' and 'y' upwards */
-        x = y;
-        y = y->parent;
+        if (u->bf == 0) return;
+
+        /* Move one level above */
+        v = u;
+        u = u->parent;
     }
 }
 
-/* A 'node' wrapper for usage with 'queue' */
-typedef struct qnode {
-    node* node;
-    struct qnode* twrd_first;
-    struct qnode* twrd_last;
-} qnode;
-
-/* Creates a qnode for node 'node' and returns it's pointer */
-qnode* create_qnode(node* node) {
-    qnode* ptr = (qnode*) malloc(sizeof(qnode));
-    ptr->twrd_first = NULL;
-    ptr->twrd_last = NULL;
-    ptr->node = node;
-
-    return ptr;
+/* Adds node w/ data to AVL tree and balances it's structure out */
+void add_node_balanced(tree* tree, int data) {
+    node* added = add_node(tree, data);
+    balance(tree, added);
 }
 
-/* O(1) q&dq queue 8^) */
-typedef struct queue {
-    qnode* first;
-    qnode* last;
-} queue;
-
-/* Creates a queue and returns it's pointer */
-queue* create_queue() {
-    queue* ptr = (queue*) malloc(sizeof(queue));
-    ptr->first = NULL;
-    ptr->last = NULL;
-
-    return ptr;
+/* PRIVATE */
+int _depth(node* node) {
+    if (node == NULL) return 0;
+    return 1 + max(_depth(node->left), _depth(node->right));
 }
 
-/* Enqueues a new qnode with qnode->node = n */
-void enqueue(queue* q, node* n) {
-    /* Create qnode */
-    qnode* qn = create_qnode(n);
-
-    /* If queue is empty */
-    if (q->first == NULL) {
-        q->first = qn;
-        q->last = qn;
-    } else {
-        qnode* prev_last = q->last;
-        prev_last->twrd_last = qn;
-        qn->twrd_first = prev_last;
-        q->last = qn;
-    }
+/* Returns the depth of a tree */
+int depth(tree* tree) {
+    return _depth(tree->root);
 }
 
-/* Dequeues a qnode and returns qnode->node->data */
-int dequeue(queue* q) {
-    if (q->first != NULL) {
-        qnode* popped = q->first;
-        int popped_data = popped->node->data;
+/* PRIVATE */
+void _print_digraph(node* node) {
+    if (node == NULL) return;
 
-        q->first = popped->twrd_last;  // Don't have to NULL q->last with right enqueue
-        
-        free(popped);
-        return popped_data;
-    }
-
-    fprintf(stderr, "[dequeue() (WARNING)] Tried to dequeue from an empty queue (returned 0)\n");
-    return 0;
+    _print_digraph(node->left);
+    if (node->parent != NULL) printf("%i -> ", node->parent->data);
+    printf("%i;\n", node->data);
+    _print_digraph(node->right);
 }
 
-/* Dequeues a qnode with node == NULL (and doesn't return anything) - used exclusivelly in print_structured() */
-void _dequeue_null(queue* q) {
-    if (q->first == NULL) {
-        fprintf(stderr, "[dequeue_null() (WARNING)] Tried to dequeue from an empty queue\n");
-    }
+/* Prints out a digraph (tree in dot format) visualizable @ http://www.webgraphviz.com */
+void print_digraph(tree* tree) {
+    if (tree == NULL) return;
 
-    qnode* popped = q->first;
-    q->first = popped->twrd_last;  // Don't have to NULL q->last with right enqueue
-    free(popped);
+    printf("digraph {\n");
+    _print_digraph(tree->root);
+    printf("}\n");
 }
 
-/* Private depth() helper */
-int _depth(node* n) {
-    if (n == NULL) {
-        return 0;
-    } else {
-        return (1 + max(_depth(n->left), _depth(n->right)));
-    }
-}
-
-/* Returns the depth of a (general) tree */
-int depth(tree t) {
-    return _depth(t.root);
-}
-
-/* Returns the maximum value in a binary search tree with root 'node' */
-int tree_max(node *root) {
-    node* ptr = root;
-
-    while (ptr->right != NULL) {
-        ptr = ptr->right;
-    }
-
-    return ptr->data;
-}
-
-/* Prints 'string' to stdout 'times' times */
-void print_times(char* string, int times) {
-    for (int i = 0; i < times; i += 1) {
-        printf("%s", string);
-    }
-}
-
-void print_structured(tree* t) {
-    if (t == NULL) return;
-
-    int height = depth(*t);  // Height of tree
-    int max_digits = log10(tree_max(t->root)) + 1;
-    int line_width = (pow(2, height) - 1);  // Max output line width
-
-    /* Create print queue */
-    queue* print_queue = create_queue();
-
-    /* Enqueue root (could be NULL) */
-    enqueue(print_queue, t->root);
-
-    /* Print the tree sctructure level by level */
-    for (int i = 0; i < height; i += 1) {
-        /* Print leading spaces */
-        print_times(" ", max_digits * (pow(2, height - 1 - i) - 1));
-
-        /* Print tree */
-        for (int j = 0; j < pow(2, i); j += 1) {
-            qnode* first = print_queue->first;
-            
-            /* If qnode->node is NULL, then it's an empty "filler" qnode (for formatting) */
-            if (first->node == NULL) {
-                /* Enqueue filler qnodes */
-                enqueue(print_queue, NULL);
-                enqueue(print_queue, NULL);
-
-                /* Print "empty" value */
-                print_times(" ", max_digits);
-                print_times(" ", max_digits * (int) (pow(2, height - i) - 1));
-
-                /* Dequeue from 'print_queue' */
-                _dequeue_null(print_queue);
-            } else {
-                /* Enqueue children */
-                enqueue(print_queue, first->node->left);
-                enqueue(print_queue, first->node->right);
-
-                /* Dequeue from 'print_queue' */
-                int num = dequeue(print_queue);
-                int num_digits = (num == 0) ? 1 : (int) (log10(abs(num)) + 1);
-
-                /* Print zero-filled num and trailing space */
-                print_times("0", max_digits - num_digits);
-                printf("%i", num);
-                print_times(" ", max_digits * (int) (pow(2, height - i) - 1));
-            }
-        }
-
-        /* Print a trailing new-line */
-        printf("\n");
-    }
-
-    free(print_queue);
-}
-
-
+/* ~~~ MAIN ~~~ */
 
 int main(void) {
-    tree* AVL = create_tree();
-    add_node(AVL, 1);
-    add_node(AVL, 2);
-    add_node(AVL, 3);
-    //add_node(AVL, 4);
-    //add_node(AVL, 5);
+    // tree* AVL = create_tree();
 
-    print_structured(AVL);
+    // add_node_balanced(AVL, 1);
+    // add_node_balanced(AVL, 2);
+    // add_node_balanced(AVL, 3);
+    // add_node_balanced(AVL, 4);
+    // add_node_balanced(AVL, 5);
+    // add_node_balanced(AVL, 6);
+    // add_node_balanced(AVL, 7);
+
+    // print_digraph(AVL);
+
+    // free_tree(AVL);
 
     return 0;
 }
