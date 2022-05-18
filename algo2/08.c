@@ -4,6 +4,8 @@
 #include <math.h>
 
 #define SIZE 7
+#define DELETED_CHAR 127
+#define DELETED_P_OAT(entry) (entry[0] == DELETED_CHAR)
 
 /* ~~~ Structs and methods ~~~ */
 
@@ -288,12 +290,15 @@ void print_ct(chaining_table* table) {
 /* Adds data to oa_table (returns 1 if successful, 0 if not) */
 int add_oat(char* data, oa_table* table) {
     int data_hash = table->hash(data);
+    char* cur_data;
     int index;
 
     for (int i = 0; i < table->data_size; i += 1) {
         index = table->probe(data_hash, i);
+        cur_data = table->data[index];
 
-        if (table->data[index] == NULL) {
+        if (cur_data == NULL || DELETED_P_OAT(cur_data)) {
+            free(cur_data);  // free(NULL) is defined
             table->data[index] = (char*) malloc(strlen(data) + 1 * sizeof(char));
             strcpy(table->data[index], data);
             return 1;
@@ -314,8 +319,7 @@ int remove_oat(char* data, oa_table* table) {
         cur_data = table->data[index];
 
         if (cur_data != NULL && strcmp(cur_data, data) == 0) {
-            table->data[index] = NULL;
-            free(cur_data);
+            cur_data[0] = DELETED_CHAR;  // Sets first char to unprintable(?) DEL
             return 1;
         }
     }
@@ -333,7 +337,8 @@ int contains_oat(char* data, oa_table* table) {
         index = table->probe(data_hash, i);
         cur_data = table->data[index];
 
-        if (cur_data != NULL && strcmp(cur_data, data) == 0) return 1;
+        if (cur_data == NULL) return 0;  // Stop on first empty field(!!!)
+        if (strcmp(cur_data, data) == 0) return 1;
     }
 
     return 0;
@@ -341,11 +346,14 @@ int contains_oat(char* data, oa_table* table) {
 
 void print_oat(oa_table* table) {
     char first = 1;
+    char* cur_data;
 
     printf("Open-addressing table:\n - ");
     for (int i = 0; i < table->data_size; i += 1) {
+        cur_data = table->data[i];
+
         if (!first) printf(", ");
-        (table->data[i] == NULL) ? printf("%s", "___") : printf("%s", table->data[i]);
+        (cur_data == NULL || DELETED_P_OAT(cur_data)) ? printf("%s", "___") : printf("%s", cur_data);
         first = 0;
     }
     printf("\n");
@@ -373,6 +381,22 @@ int quadratic_probe(int hashed_data, int offset) {
     return (hashed_data + offset + (offset * offset)) % SIZE;
 }
 
+void test_oat(oa_table* table) {
+    add_oat("car", table);
+    add_oat("aba", table);
+    print_oat(table);
+    add_oat("abc", table);  // "abc" collides with "car" (using ascii_hash())
+    add_oat("car", table);
+    print_oat(table);
+    remove_oat("car", table);
+    print_oat(table);
+    (table->data[4] != NULL) ? printf("Data isn't NULL after deletion!\n") : printf("Something failed.\n");
+    add_oat("car", table);
+    print_oat(table);
+    (contains_oat("abc", table)) ? printf("OAT contains abc!\n") : printf("OAT doesn't contain abc!\n");
+    (contains_oat("cba", table)) ? printf("OAT contains cba!\n") : printf("OAT doesn't contain cba!\n");
+}
+
 /* ~~~ MAIN ~~~ */
 
 int main(void) {
@@ -383,7 +407,7 @@ int main(void) {
     // add_ct("car", CT);
     // add_ct("aba", CT);
     // print_ct(CT);
-    // add_ct("abc", CT);  // "abc" collides with "car"
+    // add_ct("abc", CT);  // "abc" collides with "car" (using ascii_hash())
     // print_ct(CT);
     // remove_ct("car", CT);
     // print_ct(CT);
@@ -392,28 +416,11 @@ int main(void) {
 
     // printf("\n");
 
-    // add_oat("car", linear_OA);
-    // add_oat("aba", linear_OA);
-    // print_oat(linear_OA);
-    // add_oat("abc", linear_OA);
-    // print_oat(linear_OA);
-    // remove_oat("car", linear_OA);
-    // print_oat(linear_OA);
-    // (contains_oat("abc", linear_OA)) ? printf("OAT contains abc!\n") : printf("OAT doesn't contain abc!\n");
-    // (contains_oat("cba", linear_OA)) ? printf("OAT contains cba!\n") : printf("OAT doesn't contain cba!\n");
+    // test_oat(linear_OA);
 
     // printf("\n");
 
-    // add_oat("car", quadratic_OA);
-    // add_oat("aba", quadratic_OA);
-    // print_oat(quadratic_OA);
-    // add_oat("abc", quadratic_OA);
-    // add_oat("car", quadratic_OA);
-    // print_oat(quadratic_OA);
-    // remove_oat("car", quadratic_OA);
-    // print_oat(quadratic_OA);
-    // (contains_oat("abc", quadratic_OA)) ? printf("OAT contains abc!\n") : printf("OAT doesn't contain abc!\n");
-    // (contains_oat("cba", quadratic_OA)) ? printf("OAT contains cba!\n") : printf("OAT doesn't contain cba!\n");
+    // test_oat(quadratic_OA);
 
     // free_chaining_table(CT);
     // free_oa_table(linear_OA);
