@@ -1,2 +1,2 @@
-## **KMI/PP1 (Programming paradigms #2) workspace.**  
+## **KMI/PP2 (Programming paradigms #2) workspace.**  
 More @ [MSTeams](https://teams.microsoft.com/dl/launcher/launcher.html?url=%2F_%23%2Fl%2Fteam%2F19%3AkUKegFpgf_Dy2tmSA7r-_Zz5DGkELMAPlM0ClW3ZsAI1%40thread.tacv2%2Fconversations%3FgroupId%3D2ab93fbe-9e2f-4f5d-947b-6ff46da3de55%26tenantId%3D0bc2f20e-02ff-4b63-a04a-5fb58043de89&type=team&deeplinkId=419e3097-de3f-4291-ac5e-a98e807a43e2&directDl=true&msLaunch=true&enableMobilePage=true&suppressPrompt=true) // TODO: Update link
