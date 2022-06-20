@@ -66,9 +66,35 @@
 (defun circle-area (circle)
   (* pi (expt (radius circle) 2)))
 
-(defun move (obj vec-x vec-y)
-  (cond ((pointp obj) (set-x obj (+ (x obj) vec-x))
-                      (set-y obj (+ (y obj) vec-y)))
-        ((circlep obj) (let ((c (center obj)))
-                         (set-x c (+ (x c) vec-x))
-                         (set-y c (+ (y c) vec-y))))))
+(defun move (object vec)
+  (cond ((pointp object) (move-point object vec))
+        ((circlep object) (move-point (center object vec)))
+        (t (error "Object not compatible!"))))
+
+(defun move-point (point vec)
+  (set-x point (+ (first vec)  (x point)))
+  (set-y point (+ (second vec) (y point))))
+
+; Let to create a variable only accessible to val function
+(let ((store nil))
+  (defun val (&optional (value nil givenp))
+    (if givenp
+      (setf store value)
+      store)))
+
+(defmacro defvalf (name &optional (default nil))
+  (let ((store-sym (gensym "STORE")))
+    `(let ((,store-sym ,default))
+       (defun ,name (&optional (value nil givenp))
+         (if givenp
+             (setf ,store-sym value)
+           ,store-sym)))))
+
+(defmacro my-time (expression)
+  (let ((start-sym (gensym "START")))
+    `(let ((,start-sym 0))
+       (progn
+         (setf ,start-sym (get-internal-run-time))
+         ,expression
+         (format t "Vyhodnocení výrazu ~S trvalo ~as." ',expression (/ (- (get-internal-run-time) start)
+                                                                       internal-time-units-per-second))))))
