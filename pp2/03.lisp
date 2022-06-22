@@ -12,7 +12,7 @@
 (defmacro my-prog2 (form1 &body forms)
   `(let ((result ,form1)
          (fun (lambda () ,@forms)))
-     (funcall fun)result))
+     (funcall fun result))
 
 ; Same thing
 (defmacro my-prog3 (first &body body)
