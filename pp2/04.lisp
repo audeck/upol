@@ -2,7 +2,7 @@
   `(setf ,a (+ ,a 1)))
 
 (defmacro swap (a b)
-  `(psetf a ,b b ,a))
+  `(psetf ,a ,b ,b ,a))
 
 (defmacro swap-2 (a b)
   (let ((tmp (gensym)))
