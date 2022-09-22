@@ -9,10 +9,15 @@
         (slot-value tri 'vertex-c)))
 
 (defun point-distance (pt-a pt-b)
-  (sqrt (+ (square (- (slot-value pt-a x)
-                      (slot-value pt-b x)))
-           (square (- (slot-value pt-a y)
-                      (slot-value pt-b y))))))
+  (sqrt (+ (square (- (slot-value pt-a 'x)
+                      (slot-value pt-b 'x)))
+           (square (- (slot-value pt-a 'y)
+                      (slot-value pt-b 'y))))))
 
 (defmethod perimeter ((triangle triangle))
-  (
+  (let ((a (slot-value triangle 'vertex-a))
+        (b (slot-value triangle 'vertex-b))
+        (c (slot-value triangle 'vertex-c)))
+    (+ (point-distance (a b))
+       (point-distance (b c))
+       (point-distance (c a)))))
