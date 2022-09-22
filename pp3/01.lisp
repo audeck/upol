@@ -8,6 +8,9 @@
         (slot-value tri 'vertex-b)
         (slot-value tri 'vertex-c)))
 
+(defun square (x)
+  (expt x 2))
+
 (defun point-distance (pt-a pt-b)
   (sqrt (+ (square (- (slot-value pt-a 'x)
                       (slot-value pt-b 'x)))
@@ -21,3 +24,40 @@
     (+ (point-distance (a b))
        (point-distance (b c))
        (point-distance (c a)))))
+
+(defmethod right-triangle-p ((triangle triangle))
+  (let* ((a (slot-value triangle 'vertex-a))
+         (b (slot-value triangle 'vertex-b))
+         (c (slot-value triangle 'vertex-c))
+         (sides (sort (mapcar #'square
+                              (list (point-distance (a b))
+                                    (point-distance (b c))
+                                    (point-distance (c a))
+                   #'>))))
+    (eql (first sides) (+ (second sides) (third sides)))))
+
+(defclass ellipse ()
+  ((focal-point-1 :initform (make-instance 'point))
+   (focal-point-2 :initform (make-instance 'point))
+   (major-semiaxis :initform 0)))
+
+(defmethod eccentricity ((ellipse ellipse))
+  (/ (/ (point-distance (slot-value ellipse 'focal-point-1)
+                        (slot-value ellipse 'focal-point-2))
+        2)
+     (slot-value ellipse 'major-semiaxis)))
+
+(defmethod major-semiaxis ((ellipse ellipse))
+  (slot-value ellipse 'major-semiaxis))
+
+(defmethod minor-semiaxis ((ellipse ellipse))
+  (* (major-semiaxis ellipse)
+     (sqrt (- 1 (square (eccentricity ellipse))))))
+
+(defmethod to-ellipse ((circle circle))
+  (let ((ellipse (make-instance 'ellipse)))
+    (setf (slot-value ellipse 'focal-point-1) (slot-value circle 'center)
+          (slot-value ellipse 'focal-point-2) (slot-value circle 'center)
+          (slot-value ellipse 'major-semiaxis) (slot-value circle 'radius))))
+
+
