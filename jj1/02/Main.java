@@ -35,7 +35,7 @@ public class Main {
         String firstName = "Tomáš";
         String lastName = "Putna";
         System.out.println("There are "
-                + index.count(firstName, lastName)
+                + index.count(firstName, lastName) 
                 + " people named "
                 + firstName + " " + lastName);
 
