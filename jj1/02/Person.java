@@ -1,6 +1,6 @@
 package cz.upol.jj1;
 
-public class Person {
+class Person {
     int id;
     String firstName;
     String lastName;
@@ -17,20 +17,20 @@ public class Person {
         this.country = country;
     }
 
-    public String getStatus() {
+    String getStatus() {
         if (age < 18) return "junior";
         else if (age >= 65) return "senior";
         else return "dospělý";
     }
 
     /* Returns the person's full phone number (including phone code) */
-    public String getPhone() {
+    String getPhone() {
         String phoneCode = (this.country != null) ? this.country.phoneCode : "";
         return phoneCode + this.phone;
     }
 
     /* Returns the person's full name ("firstName lastName") */
-    public String getFullName() {
+    String getFullName() {
         return this.firstName + " " + this.lastName;
     }
 
@@ -64,7 +64,7 @@ public class Person {
     }
 
     /* Prints out the person's default printable string */
-    public void print() {
+    void print() {
         String[] attributes = {"id", "jméno", "příjmení", "věk", "telefon", "status", "stát"};
         System.out.println(getPrintableString(attributes));
     }
