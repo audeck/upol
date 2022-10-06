@@ -2,7 +2,7 @@ package cz.upol.jj1;
 
 import java.util.*;
 
-public class Index {
+class Index {
     Person[] persons;
     Country[] countries;
 
@@ -12,7 +12,7 @@ public class Index {
     }
 
     /* Returns the number of people in living in "countryName" */
-    public int count(String countryName) {
+    int count(String countryName) {
         int count = 0;
 
         for (Person person : this.persons) {
@@ -24,7 +24,7 @@ public class Index {
     }
 
     /* Returns the number of people named "firstName lastName" */
-    public int count(String firstName, String lastName) {
+    int count(String firstName, String lastName) {
         int count = 0;
 
         for (Person person : this.persons) {
@@ -36,7 +36,7 @@ public class Index {
     }
 
     /* Returns the person with a given id (returns null if not found) */
-    public Person search(int id) {
+    Person search(int id) {
         for (Person person : this.persons) {
             if (person.id == id) return person;
         }
@@ -44,7 +44,7 @@ public class Index {
     }
 
     /* Returns an array of all people living in "countryName" */
-    public Person[] search(String countryName) {
+    Person[] search(String countryName) {
         Person[] output = new Person[count(countryName)];
         int outputIndex = 0;
 
@@ -59,7 +59,7 @@ public class Index {
     }
 
     /* Returns an array of all people named "firstName lastName" */
-    public Person[] search(String firstName, String lastName) {
+    Person[] search(String firstName, String lastName) {
         Person[] output = new Person[count(firstName, lastName)];
         int outputIndex = 0;
 
@@ -74,7 +74,7 @@ public class Index {
     }
 
     /* Sets a person's country to a country given by phone code */
-    public boolean setCountryByPhoneCode(Person person, String phoneCode) {
+    boolean setCountryByPhoneCode(Person person, String phoneCode) {
         for (Country country : this.countries) {
             if (country.phoneCode.equals(phoneCode)) {
                 person.country = country;
@@ -86,7 +86,7 @@ public class Index {
     }
 
     /* Prints out the default index string */
-    public void print() {
+    void print() {
         StringBuilder output = new StringBuilder("Rejstřík{ ");
 
         for (Person person : this.persons) {
