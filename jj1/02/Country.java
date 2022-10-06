@@ -1,6 +1,6 @@
 package cz.upol.jj1;
 
-public class Country {
+class Country {
     String name;
     String phoneCode;
 
@@ -9,7 +9,7 @@ public class Country {
         this.phoneCode = phoneCode;
     }
 
-    public void print() {
+    void print() {
         String output = "Stát{jméno=" + this.name + ", předvolba=" + this.phoneCode +"}";
         System.out.println(output);
     }
