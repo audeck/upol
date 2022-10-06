@@ -17,25 +17,25 @@ public class Person {
         this.country = country;
     }
 
-    String getStatus() {
+    public String getStatus() {
         if (age < 18) return "junior";
         else if (age >= 65) return "senior";
         else return "dospělý";
     }
 
     /* Returns the person's full phone number (including phone code) */
-    String getPhone() {
+    public String getPhone() {
         String phoneCode = (this.country != null) ? this.country.phoneCode : "";
         return phoneCode + this.phone;
     }
 
     /* Returns the person's full name ("firstName lastName") */
-    String getFullName() {
+    public String getFullName() {
         return this.firstName + " " + this.lastName;
     }
 
     /* Returns an attribute string: "attribute=attribute_value" */
-    String getAttributeString(String attribute) {
+    private String getAttributeString(String attribute) {
         return switch (attribute) {
             case "id" -> "id=" + this.id;
             case "jméno" -> "jméno=" + this.firstName;
@@ -49,7 +49,7 @@ public class Person {
     }
 
     /* Returns a printable string: "Osoba{attribute1=value1, attribute2=value2, ...}" */
-    String getPrintableString(String[] attributes) {
+    private String getPrintableString(String[] attributes) {
         StringBuilder output = new StringBuilder("Osoba{");
         boolean isFirstAttribute = true;
 
@@ -64,13 +64,13 @@ public class Person {
     }
 
     /* Prints out the person's default printable string */
-    void print() {
+    public void print() {
         String[] attributes = {"id", "jméno", "příjmení", "věk", "telefon", "status", "stát"};
         System.out.println(getPrintableString(attributes));
     }
 
     /* Returns the person's default INDEX printable string */
-    String getIndexString() {
+    private String getIndexString() {
         String[] attributes = {"id", "jméno", "příjmení", "telefon"};
         return getPrintableString(attributes);
     }
