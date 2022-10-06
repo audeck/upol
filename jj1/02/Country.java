@@ -9,7 +9,7 @@ public class Country {
         this.phoneCode = phoneCode;
     }
 
-    void print() {
+    public void print() {
         String output = "Stát{jméno=" + this.name + ", předvolba=" + this.phoneCode +"}";
         System.out.println(output);
     }
