@@ -12,7 +12,7 @@ public class Index {
     }
 
     /* Returns the number of people in living in "countryName" */
-    int count(String countryName) {
+    public int count(String countryName) {
         int count = 0;
 
         for (Person person : this.persons) {
@@ -24,7 +24,7 @@ public class Index {
     }
 
     /* Returns the number of people named "firstName lastName" */
-    int count(String firstName, String lastName) {
+    public int count(String firstName, String lastName) {
         int count = 0;
 
         for (Person person : this.persons) {
@@ -36,7 +36,7 @@ public class Index {
     }
 
     /* Returns the person with a given id (returns null if not found) */
-    Person search(int id) {
+    public Person search(int id) {
         for (Person person : this.persons) {
             if (person.id == id) return person;
         }
@@ -44,7 +44,7 @@ public class Index {
     }
 
     /* Returns an array of all people living in "countryName" */
-    Person[] search(String countryName) {
+    public Person[] search(String countryName) {
         Person[] output = new Person[count(countryName)];
         int outputIndex = 0;
 
@@ -59,7 +59,7 @@ public class Index {
     }
 
     /* Returns an array of all people named "firstName lastName" */
-    Person[] search(String firstName, String lastName) {
+    public Person[] search(String firstName, String lastName) {
         Person[] output = new Person[count(firstName, lastName)];
         int outputIndex = 0;
 
@@ -74,7 +74,7 @@ public class Index {
     }
 
     /* Sets a person's country to a country given by phone code */
-    boolean setCountryByPhoneCode(Person person, String phoneCode) {
+    public boolean setCountryByPhoneCode(Person person, String phoneCode) {
         for (Country country : this.countries) {
             if (country.phoneCode.equals(phoneCode)) {
                 person.country = country;
@@ -86,7 +86,7 @@ public class Index {
     }
 
     /* Prints out the default index string */
-    void print() {
+    public void print() {
         StringBuilder output = new StringBuilder("Rejstřík{ ");
 
         for (Person person : this.persons) {
