@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 public class Main {
 
   public static void main(String[] args) {
-    System.out.println(formatStr("A: %0; B: %1", 1, 1.6));
+    System.out.println(formatStr("A: %0; B: %001; C: %0", 1, 1.6));
     System.out.println(formatStr("A: %0; B: %2", "Hello!", 1.6));
 
     Animal a = new Animal("Alík", AnimalSpecies.DOG, true);
@@ -22,7 +22,7 @@ public class Main {
 
   /**
    * Replaces all valid specifiers with args (arg.toString()). A valid specifier is of form #number,
-   * such that number is a positive integer less than the number of args (zero-filled numbers are
+   * such that number is a positive integer less than the number of args (zero-filled numbers aren't
    * processed as distinct). Invalid specifiers are left ignored.
    *
    * @param format The string to be formatted
@@ -40,7 +40,7 @@ public class Main {
     for (String specifier : specifiers) {
       int specifierValue = Integer.parseInt(specifier.substring(1));
       if (specifierValue < specifiers.size()) {
-        format = format.replace(specifier, args[specifierValue].toString());
+        format = format.replaceFirst(specifier, args[specifierValue].toString());
       }
     }
 
