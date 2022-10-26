@@ -13,7 +13,7 @@ public class Animal {
   }
 
   public String getName() {
-    return name;
+    return this.name;
   }
 
   public void setName(String name) {
@@ -21,7 +21,7 @@ public class Animal {
   }
 
   public AnimalSpecies getSpecies() {
-    return species;
+    return this.species;
   }
 
   public void setSpecies(AnimalSpecies species) {
@@ -29,10 +29,10 @@ public class Animal {
   }
 
   public boolean isMale() {
-    return isMale;
+    return this.isMale;
   }
 
-  public void setMale(boolean male) {
-    isMale = male;
+  public void setMale(boolean isMale) {
+    this.isMale = isMale;
   }
 }
