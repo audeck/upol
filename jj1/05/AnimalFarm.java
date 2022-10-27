@@ -18,16 +18,11 @@ public class AnimalFarm {
   }
 
   public void list() {
+    String output;
+
     for (Animal animal : this.animals) {
-      AnimalSpecies species = animal.getSpecies();
-
-      String output = animal.getName()
-          + " je "
-          + species.getName(animal.isMale())
-          + " a dělá "
-          + species.getAnimalSound()
+      output = animal.getName() + " je " + animal.getSpeciesName() + " a dělá " + animal.getSound()
           + ".";
-
       System.out.println(output);
     }
   }

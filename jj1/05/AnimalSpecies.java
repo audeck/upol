@@ -14,8 +14,8 @@ public enum AnimalSpecies {
     this.animalSound = animalSound;
   }
 
-  public String getName(boolean isMale) {
-    return (isMale) ? this.maleName : this.femaleName;
+  public String getName(Gender gender) {
+    return (gender == Gender.MALE) ? this.maleName : this.femaleName;
   }
 
   public String getAnimalSound() {
