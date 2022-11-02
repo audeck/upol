@@ -1,11 +1,18 @@
 package cz.upol.jj1;
 
+/** This class implements some functionality of a person living in a country. */
 class Person {
+  /** The person's ID */
   int id;
+  /** The person's first name */
   String firstName;
+  /** The person's last name */
   String lastName;
+  /** The person's age */
   int age;
+  /** The person's phone number */
   String phone;
+  /** The person's country */
   Country country;
 
   Person(int id, String firstName, String lastName, int age, String phone, Country country) {
@@ -17,8 +24,10 @@ class Person {
     this.country = country;
   }
 
-  // Returns the person's status
-  String getStatus() {
+  /**
+   * @return the person's status
+   */
+  public String getStatus() {
     if (this.age < 18) {
       return "junior";
     } else if (this.age >= 65) {
@@ -28,18 +37,24 @@ class Person {
     }
   }
 
-  // Returns the person's full phone number (including phone code)
+  /**
+   * @return the person's full phone number (including phone code)
+   */
   String getPhone() {
     String phoneCode = (this.country != null) ? this.country.phoneCode : "";
     return phoneCode + this.phone;
   }
 
-  // Returns the person's full name ("firstName lastName")
+  /**
+   * @return the person's full name ("firstName lastName")
+   */
   String getFullName() {
     return this.firstName + " " + this.lastName;
   }
 
-  // Returns an attribute string: "attribute=attribute_value"
+  /**
+   * @return an attribute string: "attribute=attribute_value"
+   */
   private String getAttributeString(String attribute) {
     return switch (attribute) {
       case "id" -> "id=" + this.id;
@@ -53,7 +68,9 @@ class Person {
     };
   }
 
-  // Returns a printable string: "Osoba{attribute1=value1, attribute2=value2, ...}"
+  /**
+   * @return a printable string: "Osoba{attribute1=value1, attribute2=value2, ...}"
+   */
   private String getPrintableString(String[] attributes) {
     StringBuilder output = new StringBuilder("Osoba{");
     boolean isFirstAttribute = true;
@@ -62,23 +79,25 @@ class Person {
       // Separate all but the first attribute using ", "
       if (!isFirstAttribute) {
         output.append(", ");
-        isFirstAttribute = false;
       }
       output.append(getAttributeString(attribute));
+      isFirstAttribute = false;
     }
 
     output.append("}");
     return output.toString();
   }
 
-  // Prints out the person's default printable string */
+  /** Prints out the person's default printable string. */
   void print() {
     String[] attributes = {"id", "jméno", "příjmení", "věk", "telefon", "status", "stát"};
     System.out.println(getPrintableString(attributes));
   }
 
-  // Returns the person's default INDEX printable string */
-  private String getIndexString() {
+  /**
+   * @return the person's default INDEX printable string
+   */
+  String getIndexString() {
     String[] attributes = {"id", "jméno", "příjmení", "telefon"};
     return getPrintableString(attributes);
   }
