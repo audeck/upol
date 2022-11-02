@@ -1,9 +1,8 @@
 package cz.upol.jj1;
-import java.awt.*;
 import java.lang.Math;
 
 public class Main {
-
+    
     public static void main(String[] args) {
         primes(16);
 
@@ -17,6 +16,12 @@ public class Main {
         printTriangle(5);
     }
 
+    /**
+     * Prints out all prime numbers less than {@code upperBound} on a single line separated with a
+     * space.
+     *
+     * @param upperBound upper bound of primes
+     */
     static void primes(int upperBound) {
         boolean isPrime;
         for (int i = 2; i < upperBound; i++) {
@@ -35,6 +40,13 @@ public class Main {
         System.out.print('\n');
     }
 
+    /**
+     * Multiplies two numbers together manually.
+     *
+     * @param left first number to be multiplied
+     * @param right second number to be multiplied
+     * @return result of multiplication
+     */
     static int multiply(int left, int right) {
         boolean rightIsNegative = (right < 0);
 
@@ -47,6 +59,12 @@ public class Main {
         return result;
     }
 
+    /**
+     * Returns a string with {@code number}'s name in Czech. Goes up to 10.
+     *
+     * @param number number to be named
+     * @return the czech name of {@code number}
+     */
     static String nameNumber(int number) {
         return switch (number) {
             case 1 -> "Jedna";
@@ -63,6 +81,14 @@ public class Main {
         };
     }
 
+    /**
+     * Prints out a triangle of format   *
+     *                                  **
+     *                                 * *
+     *                                ****
+     *
+     * @param baseLength side length of the triangle
+     */
     static void printTriangle(int baseLength) {
         for (int i = 0; i < baseLength - 1; i++) {
             for (int j = 1; j <= baseLength; j++) {
