@@ -18,3 +18,5 @@
 
 #Ignore out directories for jj1
 jj1/*out/
+
+out/
