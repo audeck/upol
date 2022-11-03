@@ -17,4 +17,4 @@
 *.map
 
 #Ignore out directories for jj1
-jj1/out/
+jj1/*out/
