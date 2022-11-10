@@ -44,6 +44,7 @@ public class BitSet implements Sequence, Iterable {
 
   /**
    * Checks if this bitset contains a given value.
+   *
    * @param value checked value
    * @return {@code true} if set contains value, {@code false} otherwise
    */
