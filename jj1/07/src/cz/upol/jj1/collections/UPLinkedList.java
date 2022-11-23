@@ -3,50 +3,51 @@ package cz.upol.jj1.collections;
 import java.util.NoSuchElementException;
 
 /** LinkedList implementation for integers */
-public class UPLinkedList implements Iterable, Sequence {
+public class UPLinkedList<T extends Comparable<T>> implements Iterable<T>, Sequence<T>, Comparable<UPLinkedList<T>> {
 
   /** Class represents item in LinkedList */
-  private class Node {
+  private class Node<A extends Comparable<A>> {
     /** Node value */
-    private int value;
+    private A value;
 
     /** Pointer to the next node in the list. If NULL this node is the last one. */
-    private Node next;
+    private Node<A> next;
 
-    public Node(int value, Node next) {
+    public Node(A value, Node<A> next) {
       this.value = value;
       this.next = next;
     }
 
-    public Node(int value) {
+    public Node(A value) {
       this.value = value;
       this.next = null;
     }
 
-    public Node getNext() {
+    public Node<A> getNext() {
       return next;
     }
 
-    public void setNext(Node next) {
+    public void setNext(Node<A> next) {
       this.next = next;
     }
 
-    public int getValue() {
+    public A getValue() {
       return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(A value) {
       this.value = value;
     }
   }
 
   /** List first value. If NULL, then the list is empty */
-  private Node root;
+  private Node<T> root;
 
   // public UPLinkedList() {}
 
-  public UPLinkedList(int... values) {
-    for (int value : values) {
+  @SafeVarargs
+  public UPLinkedList(T... values) {
+    for (T value : values) {
       insert(value);
     }
   }
@@ -61,7 +62,7 @@ public class UPLinkedList implements Iterable, Sequence {
     if (this.root == null) {
       return 0;
     }
-    Node current = this.root;
+    Node<T> current = this.root;
     int size = 1;
 
     while (current.getNext() != null) {
@@ -81,18 +82,18 @@ public class UPLinkedList implements Iterable, Sequence {
    *
    * @param value Value to be inserted
    */
-  public void insert(int value) {
+  public void insert(T value) {
     if (root == null) {
-      root = new Node(value);
+      root = new Node<T>(value);
       return;
     }
-    Node current = root;
+    Node<T> current = root;
 
     while (current.getNext() != null) {
       current = current.getNext();
     }
 
-    current.next = new Node(value);
+    current.next = new Node<T>(value);
   }
 
   /**
@@ -101,12 +102,12 @@ public class UPLinkedList implements Iterable, Sequence {
    * @param value checked value
    * @return true if list contains value, otherwise false
    */
-  public boolean contains(int value) {
+  public boolean contains(T value) {
     if (this.root == null) {
       return false;
     }
 
-    Node current = this.root;
+    Node<T> current = this.root;
 
     while (current.getNext() != null) {
       if (current.getValue() == value) {
@@ -124,7 +125,7 @@ public class UPLinkedList implements Iterable, Sequence {
    * @param value value to be deleted
    * @return true if a value has been deleted, otherwise false
    */
-  public boolean delete(int value) {
+  public boolean delete(T value) {
     if (this.root == null) {
       return false;
     }
@@ -134,8 +135,8 @@ public class UPLinkedList implements Iterable, Sequence {
       return true;
     }
 
-    Node previous = this.root;
-    Node current = this.root.getNext();
+    Node<T> previous = this.root;
+    Node<T> current = this.root.getNext();
 
     while (current != null) {
       if (current.getValue() == value) {
@@ -151,20 +152,55 @@ public class UPLinkedList implements Iterable, Sequence {
   }
 
   /**
+   * Compares this list to a given list and returns an integer according to the total ordering of
+   * lists.
+   *
+   * List1 is lower than list2 if the lowest index i at which list1(i) < list2(i) or list1(i)
+   * doesn't exist is lower than the lowest index j at which list1(j) > list2(j) or list2(j)
+   * doesn't exist.
+   *
+   * @param ll a given list
+   * @return -1, 0, or 1 if this list is considered lower than, equal to, or higher than a given
+   *     list
+   */
+  public int compareTo(UPLinkedList<T> ll) {
+    Iterator<T> itr1 = this.iterator();
+    Iterator<T> itr2 = ll.iterator();
+
+    // Compare lists' bodies
+    while (itr1.hasNext() && itr2.hasNext()) {
+      int compResult = itr1.next().compareTo(itr2.next());
+
+      if (compResult != 0) {
+        return compResult;
+      }
+    }
+
+    // Return based on ending
+    if (itr1.hasNext()) {
+      return 1;
+    }
+    if (itr2.hasNext()) {
+      return -1;
+    }
+    return 0;
+  }
+
+  /**
    * Returns a very basic integer iterator of this list. Iterator doesn't check for concurrent
    * modification.
    *
    * @return this list's iterator
    */
-  public Iterator iterator() {
-    return new ListItr(this.root);
+  public Iterator<T> iterator() {
+    return new ListItr<T>(this.root);
   }
 
-  private static class ListItr implements Iterator {
-    private Node current;
-    private Node next;
+  private class ListItr<E extends Comparable<E>> implements Iterator<E> {
+    private Node<E> current;
+    private Node<E> next;
 
-    ListItr(Node root) {
+    ListItr(Node<E> root) {
       this.next = root;
     }
 
@@ -178,7 +214,7 @@ public class UPLinkedList implements Iterable, Sequence {
      *
      * @return current value in list
      */
-    public int next() {
+    public E next() {
       if (!hasNext()) {
         throw new NoSuchElementException();
       }
@@ -193,7 +229,7 @@ public class UPLinkedList implements Iterable, Sequence {
   @Override
   public String toString() {
     StringBuilder description = new StringBuilder("[");
-    Iterator itr = this.iterator();
+    Iterator<T> itr = this.iterator();
     boolean isFirst = true;
 
     while (itr.hasNext()) {
@@ -203,19 +239,6 @@ public class UPLinkedList implements Iterable, Sequence {
       description.append(itr.next());
       isFirst = false;
     }
-
-    // Doesn't work if root = null!
-    //
-    // Node current = root;
-    //
-    // while (current.getNext() != null) {
-    //   description.append(current.getValue());
-    //   description.append(", ");
-    //   current = current.getNext();
-    // }
-    //
-    // description.append(current.getValue());
-    // description.append("]");
 
     description.append("]");
     return description.toString();

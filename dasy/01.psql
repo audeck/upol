@@ -1,0 +1,30 @@
+CREATE TABLE movies (
+    title text,
+    year integer,
+    length integer
+);
+
+TABLE movies;
+
+INSERT INTO movies VALUES
+    ('The Matrix', 1999, 136),
+    ('The Avengers', 2012, 2012),
+    ('The Avengers', 1998, 89);
+
+TABLE movies;
+
+INSERT INTO movies VALUES
+    ('A Space Odyssey', 1968, 149);
+
+SELECT * FROM movies WHERE (year = 1998);
+SELECT * FROM movies WHERE (year = length);
+
+DELETE FROM movies WHERE (title = 'The Matrix');
+
+TABLE movies;
+
+UPDATE movies SET year = 2077 WHERE title = 'A Space Odyssey';
+
+TABLE movies;
+
+DROP TABLE movies;

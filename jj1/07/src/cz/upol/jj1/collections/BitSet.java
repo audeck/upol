@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 /**
  * This class implements basic set functionality using an integer's bits for representing said set.
  */
-public class BitSet implements Sequence, Iterable {
+public class BitSet {
   /** The bits representing a set */
   private int bits;
   /** A value limit (values can range from 0-31 using 32 bits) */
@@ -81,11 +81,11 @@ public class BitSet implements Sequence, Iterable {
    *
    * @return this bitset's iterator
    */
-  public Iterator iterator() {
+  public BitSetItr iterator() {
     return new BitSetItr(this);
   }
 
-  private static class BitSetItr implements Iterator {
+  private static class BitSetItr {
     private BitSet set;
 
     BitSetItr(BitSet set) {
@@ -110,7 +110,7 @@ public class BitSet implements Sequence, Iterable {
   @Override
   public String toString() {
     StringBuilder output = new StringBuilder("[");
-    Iterator itr = this.iterator();
+    BitSetItr itr = this.iterator();
     boolean isFirst = true;
 
     while (itr.hasNext()) {

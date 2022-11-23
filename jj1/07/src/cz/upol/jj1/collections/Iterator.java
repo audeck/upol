@@ -1,6 +1,6 @@
 package cz.upol.jj1.collections;
 
-public interface Iterator {
+public interface Iterator<T> {
 
     /**
      * Check if a sequence has another value.
@@ -12,5 +12,5 @@ public interface Iterator {
      * Get next value in a sequence
      * @return Next value
      */
-    int next();
+    T next();
 }

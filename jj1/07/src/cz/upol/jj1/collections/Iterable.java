@@ -1,7 +1,7 @@
 package cz.upol.jj1.collections;
 
-public interface Iterable {
+public interface Iterable<T> {
 
   /** @return the iterable's iterator */
-  Iterator iterator();
+  Iterator<T> iterator();
 }

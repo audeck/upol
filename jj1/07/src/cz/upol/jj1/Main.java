@@ -2,20 +2,12 @@ package cz.upol.jj1;
 
 import cz.upol.jj1.collections.BitSet;
 import cz.upol.jj1.collections.UPLinkedList;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
-  public static void main(String[] args) {
-    UPLinkedList ll = new UPLinkedList(3, 8, 1, 11);
-    System.out.println(ll);
-
-    BitSet bs = new BitSet(0, 2, 4, 9);
-    System.out.println(Integer.toBinaryString(bs.getBits()));
-    System.out.println(Integer.bitCount(bs.getBits()));
-    if (bs.contains(2)) System.out.println("Contains 2!");
-    System.out.println(Integer.toBinaryString(bs.getBits()));
-    System.out.println(bs);
-  }
+  public static void main(String[] args) { }
 
   private static void arrays() {
     /*** Arrays ***/

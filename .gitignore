@@ -16,5 +16,8 @@
 # Ignore scss mapping
 *.map
 
-#Ignore out directories for jj1
+# Ignore (Java) build directories
 out/
+
+# Ignore .iml files
+*.iml
