@@ -6,71 +6,30 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class Main {
 
   public static void main(String[] args) {
-    comparePoints(); // HashSet size = 4
-    comparePointsFixed(); // HashSet size = 3
-
-    System.out.println(freq("hello2puck;flip.how elk hello/Hello"));
-    System.out.println(freqIgnoreCase("hello2puck;flip.how elk hello/Hello"));
-
-    System.out.println(rpnCalc("1 -2 3 + +"));  // = 2
-    System.out.println(rpnCalc("1 32 + 42 * 5 + 66 -"));  // = 1325
-
-    Map<String, Integer> bindings = new HashMap<>();
-    bindings.put("foo", 6);
-    bindings.put("bar", 9);
-
-    System.out.println(rpnCalc("foo bar + 3 /", bindings));  // = 5
-  }
-
-  private static void comparePoints() {
-    Set<Point> points = new HashSet<Point>();
-    Point point0 = new Point(3, 2);
-    Point point1 = new Point(-1, 4);
-    Point point2 = new Point(1, -2);
-    Point point3 = new Point(3, 2);
-
-    points.add(point0);
-    points.add(point1);
-    points.add(point2);
-    points.add(point3);
-
-    System.out.println(points);
-  }
-
-  private static void comparePointsFixed() {
-    Set<PointFixed> points = new HashSet<PointFixed>();
-    PointFixed point0 = new PointFixed(3, 2);
-    PointFixed point1 = new PointFixed(-1, 4);
-    PointFixed point2 = new PointFixed(1, -2);
-    PointFixed point3 = new PointFixed(3, 2);
-
-    points.add(point0);
-    points.add(point1);
-    points.add(point2);
-    points.add(point3);
-
-    System.out.println(points);
+    // code here
   }
 
   /**
-   * Counts substring occurences in a given string and returns a map of the data. Whitespace,
+   * Counts substring occurrences in a given string and returns a map of the data. Whitespace,
    * digits, and punctuation are taken as delimiters.
    *
    * @param s a given string
-   * @return a map of (substring, numberOfSubstringOccurences)
+   * @return a map of (substring, numberOfSubstringOccurrences)
    */
-  static Map<String, Integer> freq(String s) {
+  public static Map<String, Integer> freq(String s) {
     if (s == null) {
       return null;
     }
     String[] words = s.split("\\d|\\s|\\W+");
     Map<String, Integer> output = new HashMap<String, Integer>();
 
+    // O(N) :o
     for (String word : words) {
       if (output.containsKey(word)) {
         output.replace(word, output.get(word) + 1);
@@ -83,13 +42,13 @@ public class Main {
   }
 
   /**
-   * Counts substring occurences in a given string and returns a map of the data. Whitespace,
+   * Counts substring occurrences in a given string and returns a map of the data. Whitespace,
    * digits, and punctuation are taken as delimiters. Ignores substring case!
    *
    * @param s a given string
-   * @return a map of (substring, numberOfSubstringOccurences)
+   * @return a map of (substring, numberOfSubstringOccurrences)
    */
-  static Map<String, Integer> freqIgnoreCase(String s) {
+  public static Map<String, Integer> freqIgnoreCase(String s) {
     if (s == null) {
       return null;
     }
@@ -177,46 +136,37 @@ public class Main {
    * @param expr a string representing an order of operations on a stack
    * @return the top-most value left on the stack
    */
-  static int rpnCalc(String expr) {
+  public static int rpnCalc(String expr) {
     if (expr == null || expr.length() == 0) {
       return 0;
     }
     List<String> atoms = new ArrayList<String>(Arrays.asList(expr.split("\\s")));
     List<Integer> stack = new ArrayList<Integer>();
 
-    // Filter for accepted strings
-    atoms = atoms.stream().filter(atom -> {
-      return isNumber(atom)
-          || atom.equals("+")
-          || atom.equals("-")
-          || atom.equals("*")
-          || atom.equals("/");
-    }).toList();
-
-    if (atoms.size() == 0) {
-      return 0;
-    }
-
-    for (String atom : atoms) {
+    // Filter for accepted strings & handle instructions
+    atoms.stream().filter(atom -> {
+      return isNumber(atom) || isOperator(atom);
+    }).forEach(atom -> {
       if (isOperator(atom)) {
         applyOperationToStack(stack, atom);
       } else {
         stack.add(Integer.parseInt(atom));
       }
-    }
+    });
 
-    return stack.get(stack.size() - 1);
+    return (stack.size() > 0) ? stack.get(stack.size() - 1) : 0;
   }
 
   /**
-   * A simple rpn stack calculator. Variables should be a map of tuples (var_name, var_value).
+   * A simple rpn stack calculator. Variables should be a map of tuples (varName, varValue).
    *
    * @see <a href="https://en.wikipedia.org/wiki/Reverse_Polish_notation">Reverse Polish
    *     Notation</a>
    * @param expr a string representing an order of operations on a stack
+   * @param variables a map of pairs (variableName, variableValue)
    * @return the top-most value left on the stack
    */
-  static int rpnCalc(String expr, Map<String, Integer> variables) {
+  public static int rpnCalc(String expr, Map<String, Integer> variables) {
     if (expr == null || expr.length() == 0) {
       return 0;
     }
@@ -226,6 +176,7 @@ public class Main {
 
     List<String> atoms = new ArrayList<String>(Arrays.asList(expr.split("\\s")));
 
+    // Replace all variable names with values
     for (String atom : atoms) {
       if (variables.containsKey(atom)) {
         atoms.set(atoms.indexOf(atom), variables.get(atom).toString());
@@ -233,5 +184,36 @@ public class Main {
     }
 
     return rpnCalc(String.join(" ", atoms));
+  }
+
+  /**
+   * Parses an integer given in string form.
+   *
+   * @param s a given string form
+   * @return an integer represented by s
+   */
+  public static Optional<Integer> parseInt(String s) {
+    char[] cs = s.toCharArray();
+    int index = 0;
+    boolean isNegative = false;
+    int output = 0;
+    int bound = 0;
+
+    // First character can be sign
+    if (cs[0] == '-' || cs[0] == '+') {
+      bound += 1;
+      isNegative = cs[0] == '-';
+    }
+
+
+    while (cs.length - index > bound) {
+      double nextValue = Math.pow(10, index);
+      if (Integer.MAX_VALUE - output < nextValue) {
+        // RAISE HELL
+      }
+      index -= 1;
+    }
+
+    return Optional.of(output);
   }
 }
