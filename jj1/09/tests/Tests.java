@@ -2,7 +2,9 @@ import static cz.upol.jj1.Main.freq;
 import static cz.upol.jj1.Main.freqIgnoreCase;
 import static cz.upol.jj1.Main.rpnCalc;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import cz.upol.jj1.Main;
 import cz.upol.jj1.Point;
 import cz.upol.jj1.PointFixed;
 import java.util.HashMap;
@@ -72,17 +74,17 @@ public class Tests {
 
   @Test
   public void rpnCalcTest() {
-    assertEquals(rpnCalc("adsf "), 0);
-    assertEquals(rpnCalc("1 -2 3 + + "), 2);
-    assertEquals(rpnCalc("1 32 + 42 * 5 + 66 -"), 1325);
+    assertThrows(IllegalArgumentException.class, () -> Main.rpnCalc("1 2 asdf "));
+    assertEquals(rpnCalc("1 -2 3 + + "), "2");
+    assertEquals(rpnCalc("1 32 + 42 * 5 + 66 -"), "1325");
   }
 
   @Test
   public void rpnCalcBindingsTest() {
-    Map<String, Integer> bindings = new HashMap<>();
-    bindings.put("foo", 6);
+    Map<String, Object> bindings = new HashMap<>();
+    bindings.put("foo", 6.3);
     bindings.put("bar", 9);
 
-    assertEquals(rpnCalc("foo bar + 3 /", bindings), 5);
+    assertEquals(rpnCalc("foo bar + 3 /", bindings), "5.1000000000000005");  // nice math
   }
 }
