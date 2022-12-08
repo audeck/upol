@@ -1,9 +1,14 @@
 package cz.upol.jj1;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.FileSystemException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,11 +17,13 @@ import java.util.Optional;
 public class Main {
   /** The offset of digits in the ASCII table (for chars) */
   private static final int ASCII_DIGIT_OFFSET = 48;
+  private static final int DOUBLE_MIN_DECIMAL_EXPONENT = 324;
 
-  public static void main(String[] args) {
-    // code here
-    System.out.println(parseInt("-00000000694317289"));
-    System.out.println(parseDouble("-0004535.1239"));
+  public static void main(String[] args) throws IOException {
+    rpnCalc(
+        Path.of("C:\\Users\\suchlu05\\IdeaProjects\\rpnexpr.txt"),
+        Path.of("C:\\Users\\suchlu05\\IdeaProjects\\rpnout.txt")
+    );
   }
 
   /**
@@ -33,7 +40,7 @@ public class Main {
     String[] words = s.split("\\d|\\s|\\W+");
     Map<String, Integer> output = new HashMap<String, Integer>();
 
-    // O(N) :o
+    // O(N) B)
     for (String word : words) {
       if (output.containsKey(word)) {
         output.replace(word, output.get(word) + 1);
@@ -63,8 +70,8 @@ public class Main {
    * A simple rpn stack calculator. Supports both integer and double (float) format numbers, as well
    * as two truth values (#t for true; #f for false). Doesn't generalize truth values (numbers are
    * incomparable with truth values). Supports all 4 basic arithmetic operations (+, -, *, /),
-   * as well as all the basic boolean arithmetic operations (<, >, =, <=, >=), plus the ternary
-   * operator ?.
+   * as well as all the basic comparison operations (<, >, =, <=, >=), plus the ternary
+   * operator (?).
    *
    * @see <a href="https://en.wikipedia.org/wiki/Reverse_Polish_notation">Reverse Polish
    *     Notation</a>
@@ -72,6 +79,18 @@ public class Main {
   public static class RPNCalculator {
     /** Stack representation */
     static List<String> stack = new ArrayList<String>();
+
+    private static String pop() {
+      if (stack.size() < 1) {
+        throw new EmptyStackException();
+      }
+
+      return stack.remove(stack.size() - 1);
+    }
+
+    private static void push(String s) {
+      stack.add(s);
+    }
 
     /**
      * Checks if a given string is a base 10 float. Specially, returns false for empty
@@ -162,58 +181,69 @@ public class Main {
       return true;
     }
 
-    /** Exception function */
-    private static void stackSizeException(String operator) {
-      throw new IllegalArgumentException("Stack contains too few atoms to perform operation '"
-          + operator
-          + "'"
-      );
-    }
+    /** Pops 2 atoms from the stack and pushes their sum */
+    private static void applyAddition() {
+      // Get terms
+      String term1 = pop();
+      String term2 = pop();
 
-    /** Returns the result of term1 + term2 */
-    private static String addition(String term1, String term2) {
       boolean returnsFloat = isFloat(term1) || isFloat(term2);
+      String result;
 
       if (returnsFloat) {
-        return Double.toString(Double.parseDouble(term1) + Double.parseDouble(term2));
+        result = Double.toString(Double.parseDouble(term1) + Double.parseDouble(term2));
       } else {
-        return Integer.toString(Integer.parseInt(term1) + Integer.parseInt(term2));
+        result = Integer.toString(Integer.parseInt(term1) + Integer.parseInt(term2));
       }
+
+      push(result);
     }
 
-    /** Returns the result of term1 - term2 */
-    private static String subtraction(String term1, String term2) {
-      return addition(term1, "-" + term2);
+    /** Pops 2 atoms from the stack and pushes their difference */
+    private static void applySubtraction() {
+      push("-" + pop());  // Change the sign of term2
+      applyAddition();
     }
 
-    /** Returns the result of term1 * term2 */
-    private static String multiplication(String term1, String term2) {
+    /** Pops 2 atoms from the stack and pushes their product */
+    private static void applyMultiplication() {
+      String term1 = pop();
+      String term2 = pop();
+
       boolean returnsFloat = isFloat(term1) || isFloat(term2);
+      String result;
 
       if (returnsFloat) {
-        return Double.toString(Double.parseDouble(term1) * Double.parseDouble(term2));
+        result = Double.toString(Double.parseDouble(term1) * Double.parseDouble(term2));
       } else {
-        return Integer.toString(Integer.parseInt(term1) * Integer.parseInt(term2));
+        result = Integer.toString(Integer.parseInt(term1) * Integer.parseInt(term2));
       }
+
+      push(result);
     }
 
-    /** Returns the result of term1 / term2 (always a float) */
-    private static String division(String term1, String term2) {
-      if (Double.parseDouble(term2) == 0d) {
+    /** Pops 2 atoms from the stack and pushes the result of secondPop / firstPop (always float!) */
+    private static void applyDivision() {
+      String denominator = pop();
+      String numerator = pop();
+
+      String result;
+
+      if (Double.parseDouble(denominator) == 0d) {
         throw new ArithmeticException("Tried to divide by zero (big bad!)");
       }
 
-      return Double.toString(Double.parseDouble(term1) / Double.parseDouble(term2));
+      result = Double.toString(Double.parseDouble(numerator) / Double.parseDouble(denominator));
+      push(result);
     }
 
-    /** Returns the result of term1 < term2 */
-    private static String lessThan(String term1, String term2) {
+    /** Pops 2 atoms from the stack and pushes the result of secondPop < firstPop */
+    private static void applyLessThan() {
+      String term2 = pop();
+      String term1 = pop();
       boolean result;
 
-      if (isInteger(term1) && isInteger(term2)) {
-        result = (Integer.parseInt(term1) < Integer.parseInt(term2));
-      }
-      else if (isFloat(term1) && isFloat(term2)) {
+      if (isFloat(term1) || isInteger(term1) && isFloat(term2) || isInteger(term2)) {
         result = (Double.parseDouble(term1) < Double.parseDouble(term2));
       }
       else if (isBoolean(term1) && isBoolean(term2)) {
@@ -223,16 +253,25 @@ public class Main {
         throw new IllegalArgumentException("Uncomparable values: " + term1 + " and " + term2);
       }
 
-      return result ? "#t" : "#f";
+      push(result ? "#t" : "#f");
     }
 
-    /** Returns the result of term1 > term2 */
-    private static String greaterThan(String term1, String term2) {
-      return lessThan(term2, term1);
+    /** Pops 2 atoms from the stack and pushes the result of secondPop > firstPop */
+    private static void applyGreaterThan() {
+      // Swap top 2 atoms
+      String term1 = pop();
+      String term2 = pop();
+      push(term1);
+      push(term2);
+
+      // Apply less than
+      applyLessThan();
     }
 
-    /** Returns the result of term1 = term2 */
-    private static String compare(String term1, String term2) {
+    /** Pops 2 atoms from the stack and pushes #t if they're equal, #f otherwise */
+    private static void applyCompare() {
+      String term1 = pop();
+      String term2 = pop();
       boolean result;
 
       if (isInteger(term1) && isInteger(term2)) {
@@ -245,107 +284,120 @@ public class Main {
         result = (term1.equals(term2));
       }
       else {
-        throw new IllegalArgumentException("Uncomparable values: " + term1 + " and " + term2);
+        throw new IllegalArgumentException("Incomparable values: " + term1 + " and " + term2);
       }
 
-      return result ? "#t" : "#f";
+      push(result ? "#t" : "#f");
     }
 
-    /** Returns the result of term1 <= term2 */
-    private static String lessThanEqual(String term1, String term2) {
-      return (lessThan(term1, term2).equals("#t") || compare(term1, term2).equals("#t"))
-          ? "#t" : "#f";
+    private static void applyOr() {
+      String term1 = pop();
+      String term2 = pop();
+
+      if (!isBoolean(term2) || !isBoolean(term1)) {
+        throw new IllegalArgumentException("Illegal atoms for application of or: "
+            + term1 + " " + term2);
+      }
+
+      if (term1.equals("#t") || term2.equals("#t")) {
+        push("#t");
+      } else {
+        push("#f");
+      }
     }
 
-    /** Returns the result of term1 >= term2 */
-    private static String greaterThanEqual(String term1, String term2) {
-      return (greaterThan(term1, term2).equals("#t") || compare(term1, term2).equals("#t"))
-          ? "#t" : "#f";
+    private static void applyLessThanEqual() {
+      applyInequalCompare(true);
     }
 
-    /** Returns the result of term1 ? term2 : term3 */
-    private static String ternary(String term1, String term2, String term3) {
-      return (compare(term1, "#t").equals("#t")) ? term2 : term3;
+    private static void applyGreaterThanEqual() {
+      applyInequalCompare(false);
+    }
+
+    private static void applyInequalCompare(boolean isLessThan) {
+      String term1 = pop();
+      String term2 = pop();
+
+      push(term1);
+      push(term2);
+      if (isLessThan) {
+        applyLessThan();
+      } else {
+        applyGreaterThan();
+      }
+
+      push(term1);
+      push(term2);
+      applyCompare();
+
+      applyOr();
+    }
+
+    private static void applyTernary() {
+      String term1 = pop();
+      String term2 = pop();
+      String term3 = pop();
+
+      if (!isBoolean(term1)) {
+        throw new IllegalArgumentException("Can't decide ternary on invalid atom: " + term1);
+      }
+
+      push(term1.equals("#t") ? term2 : term3);
     }
 
     /**
      * Applies an operation to the internal stack, depending on the operator given.
      *
-     * @param operator a given operator (one of "+", "-", "*" or "/")
+     * @param operator a valid operator
+     * @see RPNCalculator#isOperator(String)
      */
-    private static void applyOperationToStack(String operator) {
-      int size = stack.size();
-      String operationResult = "";
-      String firstArg, secondArg, thirdArg;
-
-      // Binary operation size check
-      if (size < 2) {
-        stackSizeException(operator);
-      }
-
-      // Binary operation application
-      firstArg = stack.get(size - 1);
-      secondArg = stack.get(size - 2);
-
+    private static void applyOperation(String operator) {
       switch (operator) {
         case "+" -> {
-          operationResult = addition(secondArg, firstArg);
+          applyAddition();
         }
         case "-" -> {
-          operationResult = subtraction(secondArg, firstArg);
+          applySubtraction();
         }
         case "*" -> {
-          operationResult = multiplication(secondArg, firstArg);
+          applyMultiplication();
         }
         case "/" -> {
-          operationResult = division(secondArg, firstArg);
+          applyDivision();
         }
         case "<" -> {
-          operationResult = lessThan(secondArg, firstArg);
+          applyLessThan();
         }
         case ">" -> {
-          operationResult = greaterThan(secondArg, firstArg);
+          applyGreaterThan();
         }
         case "=" -> {
-          operationResult = compare(secondArg, firstArg);
+          applyCompare();
         }
         case "<=" -> {
-          operationResult = lessThanEqual(secondArg, firstArg);
+          applyLessThanEqual();
         }
         case ">=" -> {
-          operationResult = greaterThanEqual(secondArg, firstArg);
+          applyGreaterThanEqual();
         }
-      }
-
-      // Update stack and return if able
-      if (!operationResult.equals("")) {
-        stack.set(size - 2, operationResult);
-        stack.remove(size - 1);
-        return;
-      }
-
-      // Ternary operation size check...
-      if (size < 3) {
-        stackSizeException(operator);
-      }
-
-      thirdArg = stack.get(size - 3);
-
-      switch (operator) {
         case "?" -> {
-          operationResult = ternary(firstArg, secondArg, thirdArg);
+          applyTernary();
+        }
+        default -> {
+          // Unknown operator
+          throw new IllegalArgumentException("Unknown operator: '" + operator + "'");
         }
       }
+    }
 
-      if (!operationResult.equals("")) {
-        stack.set(size - 3, operationResult);
-        stack.remove(size - 2);
-        stack.remove(size - 1);
-        return;
+    private static void replaceVariables(List<String> atoms, Map<String, Object> variables) {
+      if (variables != null && variables.size() > 0) {
+        for (String atom : atoms) {
+          if (variables.containsKey(atom)) {
+            atoms.set(atoms.indexOf(atom), variables.get(atom).toString());
+          }
+        }
       }
-
-      // Unknown operator
-      throw new IllegalArgumentException("Unknown operator: '" + operator + "'");
     }
 
     /**
@@ -373,34 +425,65 @@ public class Main {
       // Regex split on whitespace
       List<String> atoms = new ArrayList<String>(Arrays.asList(expression.split("\\s")));
 
-      // Replace variables with their mapped values
-      if (variables != null && variables.size() > 0) {
-        for (String atom : atoms) {
-          if (variables.containsKey(atom)) {
-            atoms.set(atoms.indexOf(atom), variables.get(atom).toString());
-          }
-        }
-      }
+      replaceVariables(atoms, variables);
 
       // Filter out invalid atoms and handle each atom (add numbers/booleans; apply operations)
       atoms.stream().filter(RPNCalculator::isValidAtom).forEach(atom -> {
         if (isOperator(atom)) {
-          applyOperationToStack(atom);
+          applyOperation(atom);
         } else {
-          stack.add(atom);
+          push(atom);
         }
       });
 
-      return (stack.size() > 0) ? stack.get(stack.size() - 1) : "";
+      return (stack.isEmpty()) ? "" : pop();
     }
   }
 
+  /** @see RPNCalculator#calculate(String) */
   public static String rpnCalc(String expr) {
     return RPNCalculator.calculate(expr);
   }
 
+  /** @see RPNCalculator#calculate(String, Map) */
   public static String rpnCalc(String expr, Map<String, Object> variables) {
     return RPNCalculator.calculate(expr, variables);
+  }
+
+  /**
+   * Reads all lines from file input and writes their rpnCalc results to file output.
+   *
+   * @param input file containing rpn expressions
+   * @param output file
+   * @throws IOException
+   * @see RPNCalculator
+   */
+  public static void rpnCalc(Path input, Path output) throws IOException {
+    if (!Files.exists(input) || Files.isDirectory(input)) {
+      throw new IOException("Invalid input file: " + input.toString());
+    }
+
+    StringBuilder outputString = new StringBuilder("");
+
+    Files.lines(input).forEach((line) -> {
+      outputString.append(RPNCalculator.calculate(line)).append("\n");
+    });
+
+    if (!Files.exists(output)) {
+      Files.createFile(output);
+    }
+    Files.writeString(output, outputString);
+  }
+
+  /**
+   * Reads all lines from file input and writes their rpnCalc result into the same file.
+   *
+   * @param input
+   * @throws IOException
+   * @see RPNCalculator
+   */
+  public static void rpnCalc(Path input) throws IOException {
+    rpnCalc(input, input);
   }
 
   /** Removes all leading zeros from a given string */
@@ -416,8 +499,7 @@ public class Main {
   private static void checkNumberFormat(String number) {
     for (int i = 0; i < number.length(); i += 1) {
       if (number.charAt(i) < '0' || '9' < number.charAt(i)) {
-        throw new NumberFormatException("Cannot parse number from a string containing non-digits "
-            + "(apart from leading sign)");
+        throw new NumberFormatException("Cannot parse number from a string: " + number);
       }
     }
   }
@@ -428,7 +510,7 @@ public class Main {
    * Optional.of(-Integer.MAX_VALUE), depending on the string's leading sign.
    *
    * @param string the given string
-   * @return Optional containing the integer, or Integer.MAX_VALUE if abs(integer) is greater
+   * @return Optional containing the integer or Integer.MAX_VALUE if abs(integer) is greater
    */
   public static Optional<Integer> parseInt(String string) {
     if (string == null) {
@@ -459,7 +541,7 @@ public class Main {
     return isNegative ? Optional.of(-number) : Optional.of(number);
   }
 
-  /** Finds and return the index of the first decimal point ('.') in a string */
+  /** Return the index of the first decimal point ('.') in a string, or -1 if not found. */
   private static int indexOfDecimalPoint(String number) {
     for (int i = 0; i < number.length(); i += 1) {
       if (number.charAt(i) == '.') {
@@ -475,6 +557,7 @@ public class Main {
    * Double.MAX_VALUE, returns an Optional of Double.POSITIVE_INFINITY or Double.NEGATIVE_INFINITY
    * respectively. If the double's value is closer to zero than Double.MIN_VALUE, returns an
    * Optional of 0.
+   *
    * @param string the given string
    * @return Optional containing Double.POSITIVE_INFINITY or Double.NEGATIVE_INFINITY respectively
    *         if the parsed double's absolute value is greater than Double.MAX_VALUE, 0 if the parsed
@@ -505,11 +588,11 @@ public class Main {
     string = removeLeadingZeros(string.substring(start));
     decimalIndex = indexOfDecimalPoint(string);
 
-    // Get, reverse and check the format of the number's integer part
+    // Get, reverse and check the format of the number's integer part (should be an integer)
     String integerPart = new StringBuilder(string.substring(0, decimalIndex)).reverse().toString();
     checkNumberFormat(integerPart);
 
-    // Get and check the format of the number's decimal part
+    // Get and check the format of the number's decimal part (should be an integer)
     String decimalPart = string.substring(decimalIndex + 1);
     checkNumberFormat(decimalPart);
 
@@ -524,8 +607,11 @@ public class Main {
     }
 
     // Truncate, because computers can't do math (precisely) sometimes
-    double scale = Math.pow(10, decimalPart.length());
-    number = Math.floor(number * scale)/scale;
+    // Only when decimalPart isn't full; otherwise scale = Infinity
+    if (decimalPart.length() < DOUBLE_MIN_DECIMAL_EXPONENT) {
+      double scale = Math.pow(10, decimalPart.length());
+      number = Math.floor(number * scale)/scale;
+    }
 
     return isNegative ? Optional.of(-number) : Optional.of(number);
   }
