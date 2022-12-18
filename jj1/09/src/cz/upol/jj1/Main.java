@@ -307,30 +307,29 @@ public class Main {
     }
 
     private static void applyLessThanEqual() {
-      applyInequalCompare(true);
-    }
-
-    private static void applyGreaterThanEqual() {
-      applyInequalCompare(false);
-    }
-
-    private static void applyInequalCompare(boolean isLessThan) {
       String term1 = pop();
       String term2 = pop();
 
       push(term1);
       push(term2);
-      if (isLessThan) {
-        applyLessThan();
-      } else {
-        applyGreaterThan();
-      }
+      applyLessThan();
 
       push(term1);
       push(term2);
       applyCompare();
 
       applyOr();
+    }
+
+    private static void applyGreaterThanEqual() {
+      // Swap top 2 atoms
+      String term1 = pop();
+      String term2 = pop();
+      push(term1);
+      push(term2);
+
+      // Apply less than or equal
+      applyLessThanEqual();
     }
 
     private static void applyTernary() {
