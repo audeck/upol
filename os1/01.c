@@ -249,7 +249,7 @@ void arg_order_test() {
 
 /* 
  * Writes a null-terminated binary representation of 'num' (without it's leading 
- * zero bits) into 'bits'. Behaviour if 'bits' cannot hold enough chars is undefined.
+ * zero bits) into 'bits'. Behavior if 'bits' cannot hold enough chars is undefined.
  */
 void short2bits(char* bits, short num) {
     // Get amount of chars needed to hold 'num'
