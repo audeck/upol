@@ -2,16 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_DAY 31
-#define MAX_MONTH 12
-#define YEAR_OFFSET 1900
-#define MAX_YEAR (YEAR_OFFSET + 127)  // 1900 + 2^7 - 1
-
-#define DAY_BITS 5
-#define DAY_MASK 31  // 0b11111
-#define MONTH_BITS 4
-#define MONTH_MASK 480  // 0b111100000
-#define YEAR_BITS 7
 
 
 /****************************** UKOL #1 ******************************/
