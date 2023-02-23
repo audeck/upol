@@ -1,4 +1,4 @@
-#ifnded BITS_H
+#ifndefBITS_H
 #define BITS_H
 
 /* Decodes the binary representation of a number from bits and returns it */
