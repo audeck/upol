@@ -10,9 +10,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
-/**
- * This class implements reading and writing receipt to and from XML using the StAX API
- */
+/** This class implements reading and writing receipt to and from XML using the StAX API */
 public class StAXReceiptReaderWriter implements ReceiptReaderWriter {
 
   @Override
@@ -28,16 +26,16 @@ public class StAXReceiptReaderWriter implements ReceiptReaderWriter {
         // Name
         if (element.equalsIgnoreCase("name")) {
           receipt.setName(reader.getElementText());
-        // Itin
+          // Itin
         } else if (element.equalsIgnoreCase("itin")) {
           receipt.setItin(reader.getElementText());
-        // Item
+          // Item
         } else if (element.equalsIgnoreCase("item")) {
           ReceiptItem item = new ReceiptItem();
           String amount = reader.getAttributeValue(null, "amount");
           String unitPrice = reader.getAttributeValue(null, "unitPrice");
 
-          item.setName(reader.getElementText());
+          item.setName(reader.getElementText().replaceAll("^\\s+|\\s+$", ""));
           item.setAmount(Integer.parseInt(amount));
           item.setUnitPrice(Integer.parseInt(unitPrice));
 

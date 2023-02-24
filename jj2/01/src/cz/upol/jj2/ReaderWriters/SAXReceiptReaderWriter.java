@@ -54,14 +54,12 @@ public class SAXReceiptReaderWriter implements ReceiptReaderWriter {
             } else if (isItin) {
               receipt.setItin(text);
             } else if (isItem) {
-              currentItem.setName(text);
+              currentItem.setName(text.replaceAll("^\\s+|\\s+$", ""));
             }
           }
 
           @Override
-          public void endElement(
-              String uri, String localName, String qName)
-              throws SAXException {
+          public void endElement(String uri, String localName, String qName) throws SAXException {
             if (qName.equalsIgnoreCase("name")) {
               isName = false;
             } else if (qName.equalsIgnoreCase("itin")) {

@@ -4,10 +4,9 @@ import cz.upol.jj2.ReaderWriters.DOMReceiptReaderWriter;
 import cz.upol.jj2.ReaderWriters.SAXReceiptReaderWriter;
 import cz.upol.jj2.ReaderWriters.StAXReceiptReaderWriter;
 import cz.upol.jj2.Receipts.Receipt;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class Main {
 
@@ -17,35 +16,31 @@ public class Main {
 
   public static void testReaderWriters() {
     try {
-      InputStream input;
-      OutputStream output;
+      Receipt receipt;
+      Path inputPath = Paths.get("xml/receipt.xml");
+      Path outputPath;
 
       // DOM API
       DOMReceiptReaderWriter dom = new DOMReceiptReaderWriter();
-      input = new FileInputStream("E:\\Github\\upol\\jj2\\01\\test.xml");
+      receipt = dom.loadReceipt(Files.newInputStream(inputPath));
+      System.out.println(receipt);
 
-      Receipt receipt1 = dom.loadReceipt(input);
-      System.out.println(receipt1);
-
-      output = new FileOutputStream("E:\\Github\\upol\\jj2\\01\\dom.xml");
-      dom.storeReceipt(output, receipt1);
+      outputPath = Paths.get("xml/dom.xml");
+      dom.storeReceipt(Files.newOutputStream(outputPath), receipt);
 
       // SAX
       SAXReceiptReaderWriter sax = new SAXReceiptReaderWriter();
-      input = new FileInputStream("E:\\Github\\upol\\jj2\\01\\test.xml");
-
-      Receipt receipt2 = sax.loadReceipt(input);
-      System.out.println(receipt2);
+      receipt = sax.loadReceipt(Files.newInputStream(inputPath));
+      System.out.println(receipt);
 
       // StAX
       StAXReceiptReaderWriter stax = new StAXReceiptReaderWriter();
-      input = new FileInputStream("E:\\Github\\upol\\jj2\\01\\test.xml");
+      receipt = stax.loadReceipt(Files.newInputStream(inputPath));
+      System.out.println(receipt);
 
-      Receipt receipt3 = stax.loadReceipt(input);
-      System.out.println(receipt3);
+      outputPath = Paths.get("xml/stax.xml");
+      stax.storeReceipt(Files.newOutputStream(outputPath), receipt);
 
-      output = new FileOutputStream("E:\\Github\\upol\\jj2\\01\\stax.xml");
-      dom.storeReceipt(output, receipt3);
     } catch (Exception e) {
       e.printStackTrace();
     }
