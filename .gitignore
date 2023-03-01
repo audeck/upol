@@ -21,3 +21,5 @@ out/
 
 # Ignore .iml files
 *.iml
+jj2/02/xml/Messages.xml
+jj2/02/xml/UserData.xml
