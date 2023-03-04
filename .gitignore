@@ -21,5 +21,13 @@ out/
 
 # Ignore .iml files
 *.iml
+
+# Ignore specific xml data files
 jj2/02/xml/Messages.xml
 jj2/02/xml/UserData.xml
+
+# Ignore all .o object files
+*.o
+
+# Unignore Makefile files
+!*Makefile
