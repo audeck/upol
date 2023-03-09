@@ -10,7 +10,7 @@
 # Ignore .dirs
 .*
 
-# Ignore all personal files
+# Ignore all personally named files
 *suchomel*.*
 
 # Ignore scss mapping
