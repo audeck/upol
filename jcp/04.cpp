@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cstring>
-#include <cstdlib>
 
 using namespace std;
 
@@ -17,7 +16,12 @@ class Jmeno {
                 reallocPole(rozsah * 2);
             }
 
-            jm = strdup(name);  // pouziva malloc!
+            if (!(jm = strdup(name))) {
+                cerr << "[Error in Jmeno::Jmeno(const char*)]: "
+                     << "Failed to allocate memory" << endl;
+                exit(1);
+            }
+            
             pole[pocet] = this;
             pocet += 1;
         }
