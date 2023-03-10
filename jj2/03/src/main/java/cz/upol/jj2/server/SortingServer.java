@@ -102,7 +102,11 @@ public class SortingServer {
         }
 
         if (words.length == 2) {
-          sort(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
+          try {
+            sort(Integer.parseInt(words[0]), Integer.parseInt(words[1]));
+          } catch (NumberFormatException e) {
+            sendUndefined();
+          }
         } else {
           switch (words[0]) {
             case "quit" -> quit();
@@ -116,7 +120,7 @@ public class SortingServer {
     }
 
     /**
-     * Line terminates and sends a response to the client
+     * Line terminates and sends a response to the client.
      * @param response the response to be sent
      */
     private void sendResponse(String response) {
