@@ -31,3 +31,5 @@ jj2/02/xml/UserData.xml
 
 # Unignore Makefile files
 !*Makefile
+*.properties
+*.jar
