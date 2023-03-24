@@ -45,13 +45,11 @@ max2c:
 ;;
 min3us:
     mov ax, di
-    mov bx, si
-    mov cx, dx
 
-    cmp ax, bx
-    cmova ax, bx
-    cmp ax, cx
-    cmova ax, cx
+    cmp ax, si
+    cmova ax, si
+    cmp ax, dx
+    cmova ax, dx
     ret
 
 ;;
@@ -77,13 +75,12 @@ kladne:
 ;;
 mocnina:
     mov eax, 1
-    mov ebx, edi
     mov ecx, esi
 
 .mocnina_loop:
     cmp ecx, 0
     jle .return
-    imul ebx
+    imul edi
     sub ecx, 1
     jmp .mocnina_loop
 

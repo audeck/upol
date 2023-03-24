@@ -121,8 +121,8 @@ avg:
     add eax, esi  ; prida k eax druhe cislo
     add eax, edx  ; prida k eax treti cislo
 
-    mov ebx, 3    ; ulozi 3 do ecx
+    mov ecx, 3    ; ulozi 3 do ecx
     xor edx, edx  ; vynuluje edx (jelikoz div -> edx:eax)
-    div ebx       ; vydeli eax ecx (tremi)
+    div ecx       ; vydeli eax ecx (tremi)
 
     ret
