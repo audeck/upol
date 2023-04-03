@@ -1,9 +1,7 @@
 global _start
 
 ;;
-;; Vytvořte program mypwd, který se bude chovat podobně jako standardní 
-;; unixový příkaz pwd a vypíše na standardní výstup plnou cestu k aktuálnímu
-;; adresáři. Jaký je aktuální adresář zjistíte pomocí systémového volání getcwd.
+;; Vytvořte program mypwd2, který vypíše jméno aktuálního adresáře, tj. jméno za posledním znakem '/'.
 ;;
 
 ;
@@ -48,10 +46,33 @@ _start:
     mov byte [buffer + rax], 10  ; add a newline character to buffer
     inc rax                      ; increment rax (= length of buffer)
 
+    ; Loop setup
+    mov r8, 0                    ; r8: loop buffer offset
+    mov r9, 1                    ; r9: right-most '/' index + 1 (always a slash at buffer[0]);
+
+loop_start:
+    inc r8                       ; increment r8 to loop
+
+    cmp byte [buffer + r8], 0    ; check if [buffer + r8] is the null-terminator
+    je loop_end                 ; jump to loop_end if so
+
+    cmp byte [buffer + r8], '/'  ; check if [buffer + r8] is a slash character
+    jne loop_start               ; loop if not
+
+    inc r8                       ; increment r8 to "skip over" the slash
+    mov r9, r8                   ; update r9
+    jmp loop_start               ; loop
+
+loop_end:
+    mov r10, buffer              ; move buffer to r10 to manipulate it
+    add r10, r9                  ; offset r10 by r9
+    sub rax, r9                  ; subtract r9 from rax (length of buffer (i.e. r10))
+
+exit:
     mov rdx, rax                 ; write r10 buffer to stdout (write syscall)
     mov rax, SYS_WRITE
     mov rdi, STDOUT
-    mov rsi, buffer
+    mov rsi, r10
     syscall
 
     mov rax, SYS_EXIT            ; exit with ok code (exit syscall)

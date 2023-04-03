@@ -30,12 +30,12 @@ print_row_loop:
     push rax              ; uloz promenne
     push rcx
 
-    sub rsp, 32 + 8       ; WSL quirk(?) - segfaultuji na mem systemu bez teto instrukce
+    sub rsp, 32 + 8       ; Win64 WSL quirk(?) - segfaultuji na mem systemu bez teto instrukce
 
     mov dil, cl           ; uloz `c` do dil
     call putchar          ; zavolej putchar
 
-    add rsp, 32 + 8       ; WSL quirk(?) - segfaultuji na mem systemu bez teto instrukce
+    add rsp, 32 + 8       ; Win64 WSL quirk(?) - segfaultuji na mem systemu bez teto instrukce
 
     pop rcx               ; obnov promenne
     pop rax
@@ -52,7 +52,7 @@ print_row_ret:
 
 ;;
 ;; Vykreslí na standardní výstup vyplněný obdélník skladájící se ze znaků '*',
-;; mající rows řádků a cols sloupců.
+;; mající `rows` řádků a `cols` sloupců.
 ;;
 ;; void print_rect(int rows, int cols);
 ;;
@@ -162,7 +162,7 @@ fib:
     dec cx            ; sniz cx o 1
     push rcx          ; uloz `n`
 
-    mov di, cx        ; zavolej fib s `n` - 1
+    mov di, cx        ; zavolej fib(`n` - 1)
     call fib
 
     pop rcx           ; obnov `n`
@@ -172,12 +172,12 @@ fib:
     dec cx            ; sniz cx o 1
     push rax          ; uloz dosavadni vysledek
 
-    mov di, cx        ; zavolej fib s `n` - 2
+    mov di, cx        ; zavolej fib(`n` - 2)
     call fib
     mov r8d, eax      ; uloz vysledek do r8d
 
     pop rax           ; obnov dosavadni vysledek
-    add eax, r8d      ; pricti r8d k eax (dosavadni vysledek); fib(`n`) = fib(`n` - 1) + fib(`n` - 2)
+    add eax, r8d      ; pricti r8d k eax (= dosavadni vysledek); fib(`n`) = fib(`n` - 1) + fib(`n` - 2)
 
     ret               ; vrat eax
 
@@ -194,21 +194,21 @@ fib_end:
 ;; void print_facts(unsigned char n);
 ;;
 print_facts:
-    mov cl, dil              ; cx: `n`
+    mov cl, dil              ; cl: `n`
 
 print_facts_loop:
-    push rcx                 ; uloz cx
+    push rcx                 ; uloz rcx
 
     xor edi, edi             ; vynuluj edi
-    mov dil, cl              ; uloz cx do dil
+    mov dil, cl              ; uloz cl do dil
     call factorial           ; zavolej factorial(`n`)
 
     mov edi, eax             ; uloz eax do (argumentu) edi
     call printi              ; zavolej printi
 
-    pop rcx                  ; obnov cx
+    pop rcx                  ; obnov rcx
     
-    cmp cl, 0                ; pokud je cx == 0, skoc na _ret
+    cmp cl, 0                ; pokud je cl == 0, skoc na _ret
     je print_facts_ret
 
     dec cl                   ; sniz cx o 1

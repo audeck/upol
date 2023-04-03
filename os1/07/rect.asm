@@ -1,16 +1,20 @@
 global _start
 
+;;
+;; Vytvořte program rect, který na terminál vypíše obdélník složený ze znaků '*' o stranách 20 x 5.
+;;
+
 ;
 ; Constants
 ;
-SYS_EXIT  equ 60
-EXIT_OK   equ 0
+SYS_EXIT    equ 60    ; exit syscall number
+EXIT_OK     equ 0     ; ok exit code
 
-SYS_WRITE equ 1
-STDOUT    equ 1
+SYS_WRITE   equ 1     ; write syscall number
+STDOUT      equ 1     ; STDOUT id
 
-WIDTH     equ 20
-HEIGHT    equ 5
+WIDTH     equ 20      ; width of the rectangle
+HEIGHT    equ 5       ; height of the rectangle
 
 ;
 ; Data
@@ -18,33 +22,29 @@ HEIGHT    equ 5
 section .data
     asterisks: times WIDTH db '*'
     newline: db 10
-    asterisks_len: equ $-asterisks ; length including newline
+    asterisks_len: equ $-asterisks 
+    ; NOTE: asterisks_len "includes" newline
 
 ;
 ; Executable code
 ;
 section .text
 _start:
-    ; Store rbx to use it
-    push rbx
-    mov rbx, HEIGHT
+    push rbx                ; store rbx on the stack
+    mov rbx, HEIGHT         ; rbx: `HEIGHT` (loop variable)
 
 write:
-    ; Write one line of asterisks
-    mov rax, SYS_WRITE
+    mov rax, SYS_WRITE      ; write one line of asterisks (write syscall)
     mov rdi, STDOUT
     mov rsi, asterisks
     mov rdx, asterisks_len
     syscall
 
-    ; Repeat write `HEIGHT` times
-    dec rbx
-    jnz write
+    dec rbx                 ; decrement rbx (= height)
+    jnz write               ; loop if rbx != 0
 
-    ; Restore rbx
-    pop rbx
+    pop rbx                 ; restore rbx
 
-    ; Exit
-    mov rax, SYS_EXIT
+    mov rax, SYS_EXIT       ; exit syscall
     mov rdi, EXIT_OK
     syscall
