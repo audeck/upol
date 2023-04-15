@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Button?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="cz.upol.jj2.JavaFXML.CipherFXMLController">
+  <top>
+    <MenuBar>
+      <Menu text="_File">
+        <MenuItem text="_Encipher" onAction="#encipherAction" accelerator="alt+e" />
+        <MenuItem text="_Decipher" onAction="#decipherAction" accelerator="alt+d" />
+        <MenuItem text="E_xit" onAction="#exitAction" accelerator = "alt+x" />
+      </Menu>
+    </MenuBar>
+  </top>
+
+  <center>
+    <HBox alignment="CENTER" spacing="16">
+      <VBox alignment="CENTER">
+        <Text text="Enter text to encipher below" />
+        <TextArea wrapText="true" fx:id="txtEncipher" />
+        <Button text="Encipher!" onAction="#encipherAction" />
+      </VBox>
+      <VBox alignment="CENTER">
+        <Text text="Shifting by: 0" fx:id="lblShift" />
+        <Button text="Adjust shift" onAction="#changeShiftAction" />
+      </VBox>
+      <VBox alignment="CENTER">
+        <Text text="Enter text to decipher below" />
+        <TextArea wrapText="true" fx:id="txtDecipher" />
+        <Button text="Decipher!" onAction="#decipherAction" />
+      </VBox>
+    </HBox>
+  </center>
+</BorderPane>
