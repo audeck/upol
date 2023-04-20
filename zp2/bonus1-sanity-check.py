@@ -1,7 +1,7 @@
 import subprocess
 
 
-def runCode(times, standard):
+def run_code(times, standard):
     # Compile code using the 'standard' standard
     print(f"Compiling @ {standard}...")
 
@@ -22,8 +22,8 @@ def runCode(times, standard):
 
 
 if __name__ == "__main__":
-    # runCode(1000, "c89")
-    runCode(1000, "c99")
-    runCode(1000, "c11")
+    # run_code(1000, "c89")
+    run_code(1000, "c99")
+    run_code(1000, "c11")
 
     print("Done!")
