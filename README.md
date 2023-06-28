@@ -1,4 +1,4 @@
-##Repository index
+## Repository index
  - algo1: Algoritmy 1 [C]
  - algo2: Algoritmy 2 [C]
  - dastr: Datové stuktury [C]
